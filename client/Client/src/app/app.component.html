@@ -1,11 +1,13 @@
-<div class="container">
-  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
-    <a class="navbar-brand" href="#">Admin Panel</a>
-
-    <div class="collapse navbar-collapse" id="navbarSupportedContent">
+<div class="main">
+  <nav class="navbar navbar-expand-md navbar-dark bg-dark fixed-top">
+    <a class="navbar-brand">Client Test</a>
+    <button class="navbar-toggler hidden-sm-up" type="button" (click)="isNavbarCollapsed = !isNavbarCollapsed" data-target="#navbarsDefault" aria-controls="navbarsDefault" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div [ngbCollapse]="isNavbarCollapsed" class="collapse navbar-collapse" id="navbarsDefault">
       <ul class="navbar-nav mr-auto">
         <li class="nav-item active">
-          <a class="nav-link" href="#home" routerLink="/">Home <span class="sr-only">(current)</span></a>
+          <a class="nav-link" href="#home" routerLink="/">Home</a>
         </li>
         <li class="nav-item">
           <a class="nav-link" href="#user" routerLink="/redismanagement">Redis</a>
@@ -13,8 +15,9 @@
       </ul>
     </div>
   </nav>
+  <div class="container w-100">
+    <router-outlet></router-outlet>
+  </div>
+
 </div>
 
-<div class="container">
-    <router-outlet></router-outlet>
-</div>
