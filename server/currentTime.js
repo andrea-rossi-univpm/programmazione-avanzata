@@ -1,4 +1,4 @@
-const getCurrentTime = () => {
+module.exports = _getCurrentTime = () => {
     const _date = new Date(Date.now());
     const day = _date.getDate();
     const month = _date.getMonth() + 1;
@@ -11,5 +11,3 @@ const getCurrentTime = () => {
     //format in DD/MM/YYYY HH:mm:SS:mss
     return `${day}/${month}/${year} ${hours}:${minutes}:${seconds}.${milliseconds}`;
 };
-
-exports.getCurrentTime = getCurrentTime();
