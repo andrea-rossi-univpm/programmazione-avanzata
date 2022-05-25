@@ -1,6 +1,6 @@
 
-var _currentTime = require("./currentTime");
-
+var timeHelper = require("./currentTime");
+console.log(timeHelper);
 interface  IMsg {
     getMsg(): string;
     getCurrentTime(): string;
@@ -12,7 +12,7 @@ class CMsg {
     }
 
     protected getCurrentTime(): string {
-        return _currentTime.call();
+        return timeHelper._getCurrentTime.call();
     }
 }
 
