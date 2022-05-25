@@ -2,8 +2,8 @@ let instance = null
 
 const fs = require('fs');
 const timeHelper = require("./currentTime");
-const errorFactory = require("./error-factory");
 const loggerLevel = require("./models/logLevel");
+const errorFactory = require("./error-factory");
 
 const baseLogFileName = 'NodeJS';
 const baseDirLogName = '../Logs/';
@@ -20,7 +20,7 @@ class CLogSingleton {
     }
 
     formatMsg(logLevel, msg) {
-      return `[${[loggerLevel[logLevel]]}] [${timeHelper._getCurrentTime.call()}] >> ${msg}`;
+      return `[${Object.keys(loggerLevel)[logLevel]}] [${timeHelper._getCurrentTime.call()}] >> ${msg}`;
     }
 
     writeStream(msg) {
@@ -34,8 +34,15 @@ class CLogSingleton {
         return;
       }
 
+      console.log(msg);
+
       fs.appendFileSync(this.loggerFleName, msg + '\r\n', function (err) {
-        if (err) throw err;
+        if (err) {
+          errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg();
+          throw err;
+        }
+        //since there is not try/catch block throw will raises an exception in the current code block
+        //instead console.err just print a red color message on debug console
       });
     }
 
@@ -44,43 +51,48 @@ class CLogSingleton {
     }
 
     LOG_INFO(msg) {
-      this.writeMsg(loggerLevel.Information, msg);
+      this.writeMsg(loggerLevel.INF, msg);
     }
 
     LOG_WARNING(msg) {
-      this.writeMsg(loggerLevel.Warning, msg);
+      this.writeMsg(loggerLevel.WRN, msg);
     }
 
     LOG_ERROR(msg) {
-      this.writeMsg(loggerLevel.Error, msg);
+      this.writeMsg(loggerLevel.ERR, msg);
     }
 
     LOG_FATAL(msg) {
-      this.writeMsg(loggerLevel.Fatal, msg);
+      this.writeMsg(loggerLevel.FTL, msg);
     }
 
     LOG_TRACE(msg) {
-      this.writeMsg(loggerLevel.Trace, msg);
+      this.writeMsg(loggerLevel.TRC, msg);
     }
 
     LOG_DEBUG(msg) {
-      this.writeMsg(loggerLevel.Debug, msg);
+      this.writeMsg(loggerLevel.DBG, msg);
     }
 
     constructor() {
+
+      this.loggerFleName = this.getLoggerFileName(); 
+
         //create directory for Logs if does not exists
         if (!fs.existsSync(baseDirLogName)) {
           fs.mkdir(baseDirLogName, { recursive: true }, (err) => {
             if (err) {
-              factory.getError(enumHTTPStatusCodes.InternalServerError).getMsg();
+              errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg();
+              return;
             }
           });
+          this.LOG_TRACE("Directory created: " + baseDirLogName);
+        } else {
+          this.LOG_TRACE("Directory already existing: " + baseDirLogName);
         }
-
-        this.loggerFleName = this.getLoggerFileName(); 
-        this.writeMsg(this.formatMsg(loggerLevel.Information,"Logger Init"));
-        console.log('Log init successfully.');
         
+        this.LOG_TRACE("Logger Init");
+        this.LOG_DEBUG("Current directory: " + __dirname);
     }
     
     static getInstance() {
