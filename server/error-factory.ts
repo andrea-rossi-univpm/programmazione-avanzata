@@ -1,6 +1,6 @@
 
 var timeHelper = require("./currentTime");
-console.log(timeHelper);
+
 interface  IMsg {
     getMsg(): string;
     getCurrentTime(): string;
@@ -201,9 +201,9 @@ class ErrorFactory {
 let factory: ErrorFactory  = new ErrorFactory();
 
 
-console.log(factory.getError(enumHTTPStatusCodes.BadGateway).getMsg())
+/* console.log(factory.getError(enumHTTPStatusCodes.BadGateway).getMsg())
 console.log(factory.getError(enumHTTPStatusCodes.Conflict).getMsg())
 console.log(factory.getError(enumHTTPStatusCodes.InternalServerError).getMsg())
 console.log(factory.getError(3212).getMsg())
-
+ */
 
