@@ -3,13 +3,13 @@ let instance = null
 const fs = require('fs');
 const timeHelper = require("./currentTime");
 const loggerLevel = require("./models/logLevel");
-const errorFactory = require("./error-factory");
-
+const CErrorFactory = require("./error-factory");
 const baseLogFileName = 'NodeJS';
 const baseDirLogName = '../Logs/';
 const lofFileExt = '.log';
 
-
+const errorFactory = new CErrorFactory();
+//console.log(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg());
 
 class CLogSingleton {
     loggerFleName;
@@ -77,7 +77,6 @@ class CLogSingleton {
     }
 
     constructor() {
-
       this.loggerFleName = this.getLoggerFileName(); 
 
         //create directory for Logs if does not exists
