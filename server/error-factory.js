@@ -1,146 +1,120 @@
 
 var timeHelper = require("./currentTime");
+var enumHTTPStatusCodes = require("./models/httpsStatusCode");
 
-interface  IMsg {
-    getMsg(): string;
-    getCurrentTime(): string;
-}
 
 class CMsg {
-    getMsg(): string {
+    getMsg() {
         return "Default message";
     }
 
-    protected getCurrentTime(): string {
+    /* protected */ getCurrentTime() {
         return timeHelper._getCurrentTime.call();
     }
 }
 
-//.split(/(?=[A-Z])/) -> Network Authentication Required
-//most common 30x, 4xx,5xx errors
-enum enumHTTPStatusCodes {
-    None = 0,
-    //Redirectional
-    TemporaryRedirect = 307,
-    PermanentRedirect = 308,
-    //Client Errors
-    BadRequest = 400,
-    Unauthorazied = 401,
-    Forbidden = 403,
-    NotFound = 404,
-    Conflict = 409,
-    PlayloadTooLarge = 410,
-    UnprocessableEntity = 422,
-    TooManyRequests = 429,
-    //Server Errors
-    InternalServerError = 500, //worst
-    NotImplemented = 501,
-    BadGateway = 502,
-    ServiceUnavailable = 503,
-    GatewayTimeout = 504,
-    NetworkAuthenticationRequired = 511
-}
+
 
 class TemporaryRedirect extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Temporary Redirect`;
     }
 }
 class PermanentRedirect extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Permanent Redirect`
     }
 }
 class BadRequest extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Bad Request`;
     }
 }
 class Unauthorazied extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Unauthorazied`;
     }
 }
 class Forbidden extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Forbidden`;
     }
 }
 class NotFound extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Not Found`;
     }
 }
 class Conflict extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Conflict`;
     }
 }
 class PlayloadTooLarge extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Playload Too Large`;
     }
 }
 class UnprocessableEntity extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Unprocessable Entity`;
     }
 }
 class TooManyRequests extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Too Many equests`;
     }
 }
 class InternalServerError extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Internal ServerError`;
     }
 }
 class NotImplemented extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Not Implemented`;
     }
 }
 class BadGateway extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Bad Gateway`;
     }
 }
 class ServiceUnavailable extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Service Unavailable`;
     }
 }
 class GatewayTimeout extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Gateway Timeout`;
     }
 }
 class NetworkAuthenticationRequired extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Network Authentication Required`;
     }
 }
 
 class GenericError extends CMsg  {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Internal Server Error`;
     }
 }
 
 class UnhandledError extends CMsg {
-    getMsg(): string {
+    getMsg() {
         return `[${this.getCurrentTime()}] >> Unhandled Error`;
     }
 }
 
-class ErrorFactory {
+class CErrorFactory {
     constructor(){
         console.log("Factory Class Init");
     }
 
-    getError (type: enumHTTPStatusCodes): CMsg{
-        let retval: CMsg = null;
+    getError (type/*: enumHTTPStatusCodes*/)/* : CMsg */{
+        let retval/* : CMsg */ = null;
         switch (type){
             case enumHTTPStatusCodes.TemporaryRedirect:
                 retval = new TemporaryRedirect();
@@ -198,12 +172,12 @@ class ErrorFactory {
 
 }
 
-let factory: ErrorFactory  = new ErrorFactory();
-
-
-/* console.log(factory.getError(enumHTTPStatusCodes.BadGateway).getMsg())
+/*let factory  = new ErrorFactory();
+console.log(factory.getError(enumHTTPStatusCodes.BadGateway).getMsg())
 console.log(factory.getError(enumHTTPStatusCodes.Conflict).getMsg())
 console.log(factory.getError(enumHTTPStatusCodes.InternalServerError).getMsg())
-console.log(factory.getError(3212).getMsg())
- */
+console.log(factory.getError(3212).getMsg()) 
+*/
+ 
 
+module.exports = CErrorFactory;
