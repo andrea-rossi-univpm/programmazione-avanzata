@@ -34,8 +34,6 @@ class CLogSingleton {
         return;
       }
 
-      console.log(msg);
-
       fs.appendFileSync(this.loggerFleName, msg + '\r\n', function (err) {
         if (err) {
           errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg();
@@ -52,18 +50,22 @@ class CLogSingleton {
 
     LOG_INFO(msg) {
       this.writeMsg(loggerLevel.INF, msg);
+      console.log(msg);
     }
 
     LOG_WARNING(msg) {
       this.writeMsg(loggerLevel.WRN, msg);
+      console.warn(msg);
     }
 
     LOG_ERROR(msg) {
       this.writeMsg(loggerLevel.ERR, msg);
+      throw(msg);
     }
 
     LOG_FATAL(msg) {
       this.writeMsg(loggerLevel.FTL, msg);
+      throw(msg);
     }
 
     LOG_TRACE(msg) {

@@ -1,7 +1,7 @@
 console.log(`INDEX Startup at ${Date.now()}`);
 var nodePort = 3000;
 
-const loggerLevel = require("./models/logLevel");
+const Coordinates = require("./models/CoordinatesLatLon");
 
 const singletoneLogger = require("./logger-singleton");
 
