@@ -1,0 +1,17 @@
+[
+    {
+        "Email": "andrea.rossi@univpm.it",
+        "Username": "AROSSI",
+        "Role": "User"
+    },
+    {
+        "Email": "mario.bianchi@univpm.it",
+        "Username": "MBIANCHI",
+        "Role": "User"
+    },
+    {
+        "Email": "adriano.mancini@univpm.it",
+        "Username": "AMANCINI",
+        "Role": "Administrator"
+    }
+]

@@ -60,12 +60,12 @@ class CLogSingleton {
 
     LOG_ERROR(msg) {
       this.writeMsg(loggerLevel.ERR, msg);
-      throw(msg);
     }
 
     LOG_FATAL(msg) {
       this.writeMsg(loggerLevel.FTL, msg);
-      throw(msg);
+      //stop execution of program
+      throw msg;
     }
 
     LOG_TRACE(msg) {

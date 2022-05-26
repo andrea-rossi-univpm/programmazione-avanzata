@@ -110,7 +110,7 @@ class UnhandledError extends CMsg {
 
 class CErrorFactory {
     constructor(){
-        console.log("Factory Class Init");
+        //console.log("Factory Class Init");
     }
 
     getError (type/*: enumHTTPStatusCodes*/)/* : CMsg */{

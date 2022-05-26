@@ -1,10 +1,13 @@
-var nodePort = 3000;
+'use strict'; // For cleaner code, avoid using undeclared variables.
+
+//Binding configs
+const nodePort = 3000;
+const nodeIP = '0.0.0.0'; //all interfaces of machine
 
 const Coordinates = require("./models/CoordinatesLatLon");
 
 const enumHTTPStatusCodes = require("./models/httpsStatusCode");
 
-const loggerLevel = require("./models/logLevel");
 const singletoneLogger = require("./logger-singleton");
 
 const logger = singletoneLogger.getInstance();
@@ -25,6 +28,13 @@ const test = proj4(firstProjection,secondProjection,[2,5]);
 console.log(test);
 // [-2690666.2977344505, 3662659.885459918]
 
+//Loading user from JSON
+const users = require('./usersLoader');
+if(!(users && users instanceof Array && users.length > 0)) {
+  logger.LOG_FATAL('Failed loading Users module');
+  process.exit(1); 
+  //force the process to exit killing also async pending tasks (including I/O)
+}
 
 var os = require('os');
 var express = require('express');
@@ -75,6 +85,7 @@ function verifyAndAuthenticate(req,res,next){
 }
 
 function errorHandler(err, req, res, next) {   
+    logger.LOG_ERROR(err.message);
     res.status(500).send({"error": err.message});
 }
   
@@ -94,5 +105,5 @@ app.get('/about', function (req, res) {
 });
 
 //forcing node server to listen using IPv4
-app.listen(nodePort, '0.0.0.0');
-logger.LOG_DEBUG("Node listening at port: " + nodePort);
+app.listen(nodePort, nodeIP);
+logger.LOG_DEBUG(`Node Running on http://${nodeIP}:${nodePort}`);
