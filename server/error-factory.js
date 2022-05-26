@@ -17,94 +17,94 @@ class CMsg {
 
 class TemporaryRedirect extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Temporary Redirect`;
+        return `Temporary Redirect`;
     }
 }
 class PermanentRedirect extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Permanent Redirect`
+        return `Permanent Redirect`
     }
 }
 class BadRequest extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Bad Request`;
+        return `Bad Request`;
     }
 }
 class Unauthorazied extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Unauthorazied`;
+        return `Unauthorazied`;
     }
 }
 class Forbidden extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Forbidden`;
+        return `Forbidden`;
     }
 }
 class NotFound extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Not Found`;
+        return `Not Found`;
     }
 }
 class Conflict extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Conflict`;
+        return `Conflict`;
     }
 }
 class PlayloadTooLarge extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Playload Too Large`;
+        return `Playload Too Large`;
     }
 }
 class UnprocessableEntity extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Unprocessable Entity`;
+        return `Unprocessable Entity`;
     }
 }
 class TooManyRequests extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Too Many equests`;
+        return `Too Many equests`;
     }
 }
 class InternalServerError extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Internal ServerError`;
+        return `Internal ServerError`;
     }
 }
 class NotImplemented extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Not Implemented`;
+        return `Not Implemented`;
     }
 }
 class BadGateway extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Bad Gateway`;
+        return `Bad Gateway`;
     }
 }
 class ServiceUnavailable extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Service Unavailable`;
+        return `Service Unavailable`;
     }
 }
 class GatewayTimeout extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Gateway Timeout`;
+        return `Gateway Timeout`;
     }
 }
 class NetworkAuthenticationRequired extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Network Authentication Required`;
+        return `Network Authentication Required`;
     }
 }
 
 class GenericError extends CMsg  {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Internal Server Error`;
+        return `Internal Server Error`;
     }
 }
 
 class UnhandledError extends CMsg {
     getMsg() {
-        return `[${this.getCurrentTime()}] >> Unhandled Error`;
+        return `Unhandled Error`;
     }
 }
 
