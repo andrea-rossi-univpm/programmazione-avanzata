@@ -104,3 +104,4 @@ dist
 .tern-port
 client/Client/.vscode
 server/package-lock.json
+server/error-factory.js
