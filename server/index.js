@@ -11,8 +11,8 @@ const logger = singletoneLogger.getInstance();
 
 //configs
 //reading from .env file (only strings) If not defined port/ip default set available with ||
-const nodePort = process.env.PORT || 3000; 
-const nodeIP = process.env.IP || '0.0.0.0'; //all interfaces of machine
+const nodePort = process.env.NODE_PORT || 3000; 
+const nodeIP = process.env.NODE_IP || '0.0.0.0'; //all interfaces of machine
 const authWall = false;
 const privateKey = process.env.SECRET_KEY;
 //If authWall is false I don't care about missing key or logging it
@@ -26,12 +26,21 @@ if(authWall === true) {
   logger.LOG_WARNING('Authentication disabled');
 }
 
+//Loading user from JSON with usersLoader module
+//users are loaded only once in index.js and will passed as parameter if needed
+const users = require('./modules/usersLoader');
+
+//After user are loaded successfully, we need to start redis, setting up [mail, credit]
+
+//REDIS
+const redisHandler = require('./modules/redisHandler');
+redisHandler._SetUsers(users);
+
+const initialUserCredits = process.env.DEFAULT_USER_CREDIT || 5;
 
 const Coordinates = require("./models/CoordinatesLatLon");
 
 const enumHTTPStatusCodes = require("./models/httpsStatusCode");
-
-
 
 
 const CErrorFactory = require("./modules/error-factory");
@@ -46,13 +55,6 @@ const test = proj4(firstProjection,secondProjection,[2,5]);
 console.log(test);
 // [-2690666.2977344505, 3662659.885459918]
 
-//Loading user from JSON
-const users = require('./modules/usersLoader');
-if(!(users && users instanceof Array && users.length > 0)) {
-  logger.LOG_FATAL('Failed loading Users module');
-  process.exit(1); 
-  //force the process to exit killing also async pending tasks (including I/O)
-}
 
 var os = require('os');
 var express = require('express');
