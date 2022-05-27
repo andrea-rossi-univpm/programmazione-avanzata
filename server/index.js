@@ -123,6 +123,10 @@ app.get('/getUsers', function (req, res) {
 });
 
 app.post('/addCredit', function (req, res, next) {
+  //check admin role
+  /* if(req.user.Role !== 'Administrator') {
+    return res.status(401).send({"error": 'User must be Administrator'});
+  } */
   const params =  req.body;
   if(!params || Object.keys(params).length === 0) {
     //why next does not work?
