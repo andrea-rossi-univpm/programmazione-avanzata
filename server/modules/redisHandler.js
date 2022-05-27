@@ -48,6 +48,12 @@ function setValue(key, value) {
     });
 }
 
+
+/* The incr() function increments a key value by 1. 
+If you need to increment by a different amount, 
+you can use incrby() function. 
+Similarly, to decrement a key you can use the functions like decr() and decrby(). */
+
 module.exports = {
     _AddCredits: function(email, creditToAdd) {
         const keyValue = getKeyValue(email);
