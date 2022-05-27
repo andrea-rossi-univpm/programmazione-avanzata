@@ -47,9 +47,3 @@ let validator = {
 };
 
 module.exports = LatLongCoordinates  = new Proxy({}, validator);
-
-/* chord.Latitude = 30;
-chord.Longitude= 30;
-console.log(chord); // 30,30
-chord.Latitude = 300; //exc
-chord.Longitude= 300; //exc */
