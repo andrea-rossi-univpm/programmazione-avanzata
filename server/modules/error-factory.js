@@ -1,6 +1,6 @@
 
 var timeHelper = require("./currentTime");
-var enumHTTPStatusCodes = require("./models/httpsStatusCode");
+var enumHTTPStatusCodes = require("../models/httpsStatusCode");
 
 
 class CMsg {

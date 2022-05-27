@@ -2,7 +2,7 @@ let instance = null
 
 const fs = require('fs');
 const timeHelper = require("./currentTime");
-const loggerLevel = require("./models/logLevel");
+const loggerLevel = require("../models/logLevel");
 const CErrorFactory = require("./error-factory");
 const baseLogFileName = 'NodeJS';
 const baseDirLogName = '../Logs/';

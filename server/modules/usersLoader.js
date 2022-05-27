@@ -1,6 +1,6 @@
 //JSON file could be loaded also using require function.
 //In this case I use readFile to avoid cached result. (BTW Require is synchronous)
-const enumHTTPStatusCodes = require("./models/httpsStatusCode");
+const enumHTTPStatusCodes = require("../models/httpsStatusCode");
 
 const singletoneLogger = require("./logger-singleton");
 const logger = singletoneLogger.getInstance();

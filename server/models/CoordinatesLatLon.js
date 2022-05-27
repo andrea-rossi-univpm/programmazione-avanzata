@@ -1,6 +1,6 @@
 //simple lat/long coordinates: Latitude: 43.6391249, Longitude: 13.3614249
 
-const singletoneLogger = require("../logger-singleton");
+const singletoneLogger = require("../modules/logger-singleton");
 const logger = singletoneLogger.getInstance();
 
 const latMax = 90.0000000;

@@ -1,23 +1,40 @@
 'use strict'; // For cleaner code, avoid using undeclared variables.
 
-//Binding configs
-const nodePort = 3000;
-const nodeIP = '0.0.0.0'; //all interfaces of machine
-const authWall = false;
+require('dotenv').config();
 
-const Coordinates = require("./models/CoordinatesLatLon");
-
-const enumHTTPStatusCodes = require("./models/httpsStatusCode");
-
-const singletoneLogger = require("./logger-singleton");
-
+//logger singletone
+const singletoneLogger = require("./modules/logger-singleton");
 const logger = singletoneLogger.getInstance();
 //singleton logger tests:
 //logger2.LOG_ERROR("test");
 //console.log("Equals:: ", logger === logger2);
 
+//configs
+//reading from .env file (only strings) If not defined port/ip default set available with ||
+const nodePort = process.env.PORT || 3000; 
+const nodeIP = process.env.IP || '0.0.0.0'; //all interfaces of machine
+const authWall = false;
+const privateKey = process.env.SECRET_KEY;
+//If authWall is false I don't care about missing key or logging it
+if(authWall === true) {
+  if(!privateKey) { //null, undefined, 0 or ''
+    logger.LOG_FATAL('Unable to retrieve Private Key from .env file');
+  } else {
+    logger.LOG_INFO(`Authentication enabled. Private key: ${privateKey}`);
+  }
+} else {
+  logger.LOG_WARNING('Authentication disabled');
+}
 
-const CErrorFactory = require("./error-factory");
+
+const Coordinates = require("./models/CoordinatesLatLon");
+
+const enumHTTPStatusCodes = require("./models/httpsStatusCode");
+
+
+
+
+const CErrorFactory = require("./modules/error-factory");
 const errorFactory = new CErrorFactory();
 
 const proj4 = require("proj4");
@@ -30,7 +47,7 @@ console.log(test);
 // [-2690666.2977344505, 3662659.885459918]
 
 //Loading user from JSON
-const users = require('./usersLoader');
+const users = require('./modules/usersLoader');
 if(!(users && users instanceof Array && users.length > 0)) {
   logger.LOG_FATAL('Failed loading Users module');
   process.exit(1); 
