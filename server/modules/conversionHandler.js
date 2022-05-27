@@ -72,20 +72,40 @@ proj4jsLIB.defs([
    ]
 );
 
-
-const test1 = 
-   proj4jsLIB('EPSG:4326','EPSG:32633')
-      .forward( [12, 43] ).reverse(); 
+//correct business logic for lat long
+const test1 = proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] ); 
 // [51.57027349352602, -0.8461130514492281]
+
+/* //correct business logic for lat long
+const array = [
+   [12, 43],
+   [13, 44],
+]
+
+array.forEach(x => {
+   console.log( proj4jsLIB('EPSG:4326','EPSG:32633').forward(x))
+});
+
+
+const test3 = proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] );  */
             
-const test2 = proj4jsLIB('EPSG:27700','EPSG:4326')
-   .inverse( [ -0.846, 51.57 ] ); // lon, lat !!! 
+/* const test2 = proj4jsLIB('EPSG:27700','EPSG:4326')
+   .inverse( [ -0.846, 51.57 ] ); // lon, lat !!!  */
 // [480077.3157135821, 186311.70711789717]
+
+//geoJSON: when generated i have to specify
+//"coordinates": [43.234099, 13.628211]
+/* {
+   source : 27700,
+   json : geoJSON,
+   dest: 4326
+}  -> EXAMPLE of post request*/
 
 const LatLonCoordinates = require("../models/CoordinatesLatLon-Proxy");
 
-/* LatLonCoordinates.Latitude = 30;
-LatLonCoordinates.Longitude= 30;
+LatLonCoordinates.Latitude = 30;
+LatLonCoordinates.Longitude = 30;
+
 console.log(LatLonCoordinates); // 30,30
 LatLonCoordinates.Latitude = 300; //exc
 LatLonCoordinates.Longitude= 300; //exc */
