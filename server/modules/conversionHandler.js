@@ -26,23 +26,46 @@
         "coordinates": [43.234099, 13.628211]
      }
 
+  OPERATION:
+  Conversion:
+  1) Lat/Long -> Array of Coordinates
+  2) Lat/Long -> geoJSON
+
+  3) Array of Coordinates -> Lat/Long
+  4) Array of Coordinates -> geoJSON
+
+  5) geoJSON -> Lat/Long
+  5) geoJSON -> Array of Coordinates
 
 */
 
-const proj4 = require("proj4");
+const proj4jsLIB = require("proj4");
 
-var firstProjection = 'PROJCS["NAD83 / Massachusetts Mainland",GEOGCS["NAD83",DATUM["North_American_Datum_1983",SPHEROID["GRS 1980",6378137,298.257222101,AUTHORITY["EPSG","7019"]],AUTHORITY["EPSG","6269"]],PRIMEM["Greenwich",0,AUTHORITY["EPSG","8901"]],UNIT["degree",0.01745329251994328,AUTHORITY["EPSG","9122"]],AUTHORITY["EPSG","4269"]],UNIT["metre",1,AUTHORITY["EPSG","9001"]],PROJECTION["Lambert_Conformal_Conic_2SP"],PARAMETER["standard_parallel_1",42.68333333333333],PARAMETER["standard_parallel_2",41.71666666666667],PARAMETER["latitude_of_origin",41],PARAMETER["central_meridian",-71.5],PARAMETER["false_easting",200000],PARAMETER["false_northing",750000],AUTHORITY["EPSG","26986"],AXIS["X",EAST],AXIS["Y",NORTH]]';
-var secondProjection = "+proj=gnom +lat_0=90 +lon_0=0 +x_0=6300000 +y_0=6300000 +ellps=WGS84 +datum=WGS84 +units=m +no_defs";
-//I'm not going to redefine those two in latter examples.
-const test = proj4(firstProjection,secondProjection,[2,5]);
-console.log(test);
-// [-2690666.2977344505, 3662659.885459918]
+/* var sourceLatLong = new proj4jsLIB.Proj('EPSG:4326');  
+//var dest = new proj4jsLIB.Proj('EPSG:4269');  
+var dest = new proj4jsLIB.Proj('EPSG:3857');  
+
+// performing transformation
+var southWestOld = new proj4jsLIB.Point( xMin, yMin );   
+var northEastOld = new proj4jsLIB.Point( xMax, yMax ); 
+
+var southWestNew = proj4jsLIB.transform(sourceLatLong, dest, southWestOld);      
+var northEastNew = proj4jsLIB.transform(sourceLatLong, dest, northEastOld); 
+
+console.log("before: southWestOld,northEastOld", southWestOld, northEastOld);
+console.log("after: southWestNew,northEastNew", southWestNew, northEastNew); */
+
+//NOTE: [x,y] => [lon,lat]
+proj4jsLIB.defs("EPSG:27700", "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs");
+
+const test1 = proj4jsLIB('EPSG:27700','EPSG:4326').forward( [480069, 186342] ).reverse(); 
+// [51.57027349352602, -0.8461130514492281]
+            
+const test2 = proj4jsLIB('EPSG:27700','EPSG:4326').inverse( [ -0.846, 51.57 ] ); // lon, lat !!! 
+// [480077.3157135821, 186311.70711789717]
 
 const LatLonCoordinates = require("../models/CoordinatesLatLon-Proxy");
 
-let test2 = new LatLonCoordinates();
-test2.Latitude = 30;
-test2.Longitude= 30;
 /* LatLonCoordinates.Latitude = 30;
 LatLonCoordinates.Longitude= 30;
 console.log(LatLonCoordinates); // 30,30
