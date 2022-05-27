@@ -29,19 +29,10 @@ export class RedisManagementComponent implements OnInit {
 
   async addCredit(email: string) {
 
-    Swal.fire({
-      title: 'How old are you?',
-      icon: 'question',
-      input: 'range',
-      inputLabel: 'Your age',
-      inputValue: 10
-    });
-
     let swalResult = await Swal.fire<any>({
-      title: 'How old are you?',
+      title: 'How many credits?',
       icon: 'question',
       input: 'range',
-      inputLabel: 'Your age',
       inputValue: 10
     });
 

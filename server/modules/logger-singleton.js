@@ -60,6 +60,7 @@ class CLogSingleton {
 
     LOG_ERROR(msg) {
       this.writeMsg(loggerLevel.ERR, msg);
+      console.error(msg);
     }
 
     LOG_FATAL(msg) {

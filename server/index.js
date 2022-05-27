@@ -34,9 +34,7 @@ const users = require('./modules/usersLoader');
 
 //REDIS
 const redisHandler = require('./modules/redisHandler');
-redisHandler._SetUsers(users);
-
-const initialUserCredits = process.env.DEFAULT_USER_CREDIT || 5;
+//redisHandler._SetUsers(users); 
 
 const Coordinates = require("./models/CoordinatesLatLon");
 
@@ -166,19 +164,30 @@ app.post('/addCredit', function (req, res, next) {
       const CreditToAdd = params.CreditToAdd;
       const Email = params.Email;
 
-      logger.LOG_INFO(
-        `Adding ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
       //call to redis
-      res.sendStatus(200);
+      try {
+        const result = redisHandler._AddCredits(Email, CreditToAdd);
+        if(result) {
+          logger.LOG_INFO(
+            `Added ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
+          res.sendStatus(200);
+        }
+      } catch(err) {
+        errorHandler(
+          new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: ${err}`),
+          null, //req
+          res,
+          null
+        );
+      }
     }
-
-    
-    
   }
 });
 
 //forcing node server to listen using IPv4
-app.listen(nodePort, nodeIP);
-logger.LOG_DEBUG(`Node Running on http://${nodeIP}:${nodePort}`);
+app.listen(nodePort, nodeIP, () => {
+  logger.LOG_INFO(`Node Running on http://${nodeIP}:${nodePort}`);
+});
+
 
 //for /l %x in (1, 1, 1000) do curl -v localhost:3000/about
