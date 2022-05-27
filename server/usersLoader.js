@@ -26,7 +26,25 @@ if(!fs.existsSync(usersFilePath)) {
     }
 }
 
+
 if(users && users.length > 0) {
+    //redis will have key-value for [key: email], [value: credits]
+    //I have to check for duplicates entries (assuming email as primary key)
+    
+    let hasDuplicateValue = false;
+    let duplicateValue = undefined;
+    //sort elements of an array in place, then using a compare function can see if (already sorted array) current and next are equal
+    users.map(x => x['Email']).sort().sort((a,b) => {
+        if(a === b) {
+            hasDuplicateValue = true;
+            duplicateValue = b;
+        }
+    });
+    if(hasDuplicateValue === true) {
+        //exit
+        logger.LOG_FATAL(`Duplicate EMAIL value: ${duplicateValue}`);
+    }
+
     module.exports = users;
     //using MAP and JOIN to beautify output
     const usersCaption = users.map( e => e['Username'] ).join(", ");

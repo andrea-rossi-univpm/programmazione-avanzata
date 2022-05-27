@@ -3,6 +3,7 @@
 //Binding configs
 const nodePort = 3000;
 const nodeIP = '0.0.0.0'; //all interfaces of machine
+const authWall = false;
 
 const Coordinates = require("./models/CoordinatesLatLon");
 
@@ -38,9 +39,12 @@ if(!(users && users instanceof Array && users.length > 0)) {
 
 var os = require('os');
 var express = require('express');
+//enabling CORS for every domain wich is not recomended for security reasons
+var cors = require('cors'); 
 const jwt = require('jsonwebtoken');
 const req = require("express/lib/request");
 var app = express();
+app.use(express.json()); // for parsing request body as JSON
 
 var logRoute = function (req, res, next) {
   //processing x-forwarded-for only when setted: might be not setted (ex Ip behind proxy?)
@@ -90,10 +94,14 @@ function errorHandler(err, req, res, next) {
 }
   
 //middleware called on each route
+app.use(cors());
 app.use(logRoute);  //logging route call
-app.use(checkHeader); //checking if auth header exists
-app.use(checkToken); //checking jwt
-app.use(verifyAndAuthenticate); //verify of jwt
+if(authWall === true) { //for debugging purpose
+  app.use(checkHeader); //checking if auth header exists
+  app.use(checkToken); //checking jwt
+  app.use(verifyAndAuthenticate); //verify of jwt
+}
+
 app.use(errorHandler); //handling errors on previous middleware steps
 
 app.get('/', function (req, res) {
@@ -102,6 +110,52 @@ app.get('/', function (req, res) {
 
 app.get('/about', function (req, res) {
   res.send('Hello ' + req.user.GivenName + ' ' + req.user.Surname);
+});
+
+app.get('/getUsers', function (req, res) {
+  res.send(users);
+});
+
+app.post('/addCredit', function (req, res, next) {
+  const params =  req.body;
+  if(!params || Object.keys(params).length === 0) {
+    //why next does not work?
+    errorHandler(
+      new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"),
+      null, //req
+      res,
+      null
+    );
+  } else {
+    logger.LOG_INFO('add credit body: '+ params);
+    if((users.find(x => x['Email'] === params.Email) === undefined)) {
+      errorHandler(
+        new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `Email: ${params.Email} not found`),
+        null, //req
+        res,
+        null
+      );
+      return;
+    } else if ( !Number.isInteger(params.CreditToAdd) || params.CreditToAdd < 0){
+      errorHandler(
+        new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: Invalid credit.`),
+        null, //req
+        res,
+        null
+      );
+    } else {
+      const CreditToAdd = params.CreditToAdd;
+      const Email = params.Email;
+
+      logger.LOG_INFO(
+        `Adding ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
+      //call to redis
+      res.sendStatus(200);
+    }
+
+    
+    
+  }
 });
 
 //forcing node server to listen using IPv4
