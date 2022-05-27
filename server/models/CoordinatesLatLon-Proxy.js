@@ -3,6 +3,7 @@
 const singletoneLogger = require("../modules/logger-singleton");
 const logger = singletoneLogger.getInstance();
 
+//WGS84 
 const latMax = 90.0000000;
 const latMin = -90.0000000;
 
@@ -18,10 +19,10 @@ let validator = {
           logger.LOG_ERROR('Latitue is not an integer');
           return false;
         }
-        if (value > latMax || value < latMin) {
+        /* if (value > latMax || value < latMin) {
           logger.LOG_ERROR(`Latitude out of range ${latMin}~${latMax}`);
           return false;
-        }
+        } */
         //storing the value
         obj[prop] = value;
         break;
@@ -30,10 +31,10 @@ let validator = {
           logger.LOG_ERROR('Longitude is not an integer');
           return false;
         }
-        if (value > longMax || value < longMin) {
+        /* if (value > longMax || value < longMin) {
           logger.LOG_ERROR(`Longitude out of range ${latMin}~${latMax}`);
           return false;
-        }
+        } */
         //storing the value
         obj[prop] = value;
         break;
