@@ -89,14 +89,19 @@ function verifyAndAuthenticate(req,res,next){
     req.user = decoded;
     next();
   } else {
-    next(new Error(errorFactory.getError(enumHTTPStatusCodes.Unauthorazied).getMsg() + ": JWT verification failed"));
+    let err = new Error(
+      errorFactory.getError(
+        enumHTTPStatusCodes.Unauthorazied).getMsg() + 
+        ": JWT verification failed");
+    err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+    next(err);
   }
     
 }
 
 function errorHandler(err, req, res, next) {   
     logger.LOG_ERROR(err.message);
-    res.status(500).send({"error": err.message});
+    res.status(err.StatusCode).send({"error": err.message});
 }
   
 //middleware called on each route
@@ -122,7 +127,7 @@ app.get('/getUsers', function (req, res) {
   res.send(users);
 });
 
-app.post('/addCredit', function (req, res, next) {
+app.post('/addCredit', function (req, res) {
   //check admin role
   /* if(req.user.Role !== 'Administrator') {
     return res.status(401).send({"error": 'User must be Administrator'});
@@ -132,7 +137,7 @@ app.post('/addCredit', function (req, res, next) {
     //why next does not work?
     errorHandler(
       new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"),
-      null, //req
+      req, //req
       res,
       null
     );
@@ -140,15 +145,15 @@ app.post('/addCredit', function (req, res, next) {
     logger.LOG_INFO('add credit body: '+ params);
     if((users.find(x => x['Email'] === params.Email) === undefined)) {
       errorHandler(
-        new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `Email: ${params.Email} not found`),
-        null, //req
+        new Error(errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + `Email: ${params.Email} not found`),
+        req, //req
         res,
         null
       );
       return;
-    } else if ( !Number.isInteger(params.CreditToAdd) || params.CreditToAdd < 0){
+    } else if ( !Number.isInteger(params.CreditToAdd) || params.CreditToAdd <= 0){
       errorHandler(
-        new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: Invalid credit.`),
+        new Error(errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: Invalid credit.`),
         null, //req
         res,
         null

@@ -14,7 +14,7 @@
 
  *2: Array of Coordinates: 
     var ArrayOfCoordinates = [
-        {x: 0, y: 0},
+        {lat: 0, lng: 0},
         {x: 1, y: 0}, 
         {x: 1, y: 1}
     ]
@@ -28,6 +28,11 @@
 
   OPERATION:
   Conversion:
+  Lat/Lon xyz 
+
+  EPSG:4326 -> EPSG:32633
+  EPSG:3857 ->  EPSG:4269
+
   1) Lat/Long -> Array of Coordinates
   2) Lat/Long -> geoJSON
 
@@ -56,12 +61,25 @@ console.log("before: southWestOld,northEastOld", southWestOld, northEastOld);
 console.log("after: southWestNew,northEastNew", southWestNew, northEastNew); */
 
 //NOTE: [x,y] => [lon,lat]
-proj4jsLIB.defs("EPSG:27700", "+proj=tmerc +lat_0=49 +lon_0=-2 +k=0.9996012717 +x_0=400000 +y_0=-100000 +ellps=airy +datum=OSGB36 +units=m +no_defs");
+proj4jsLIB.defs([
+   [
+      "EPSG:32633", 
+      "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs"
+   ],
+   [
+      'EPSG:4326',
+      '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
+   ]
+);
 
-const test1 = proj4jsLIB('EPSG:27700','EPSG:4326').forward( [480069, 186342] ).reverse(); 
+
+const test1 = 
+   proj4jsLIB('EPSG:4326','EPSG:32633')
+      .forward( [12, 43] ).reverse(); 
 // [51.57027349352602, -0.8461130514492281]
             
-const test2 = proj4jsLIB('EPSG:27700','EPSG:4326').inverse( [ -0.846, 51.57 ] ); // lon, lat !!! 
+const test2 = proj4jsLIB('EPSG:27700','EPSG:4326')
+   .inverse( [ -0.846, 51.57 ] ); // lon, lat !!! 
 // [480077.3157135821, 186311.70711789717]
 
 const LatLonCoordinates = require("../models/CoordinatesLatLon-Proxy");

@@ -1,4 +1,5 @@
-let instance = null
+'use strict';
+let instance = null;
 
 const fs = require('fs');
 const timeHelper = require("./currentTime");

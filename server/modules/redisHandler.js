@@ -12,7 +12,9 @@ const redisSocket = {
 logger.LOG_INFO("Redis connection setting: " + JSON.stringify(redisSocket,'\t'));
 
 //how to catch redis service offline?
-const redisClient = redis.createClient(redisSocket);
+//todo: IORedis
+//connection refused
+const redisClient = /*await*/ redis.createClient(redisSocket);
 
 // Disable client's AUTH command.
 redisClient['auth'] = null;
@@ -72,7 +74,7 @@ module.exports = {
                 return false;
             }
             
-            setValue(keyValue['key'], keyValue['value'] + creditToAdd);
+            setValue(keyValue['key'], keyValue['value'] - 1);
             return true;
         } 
     },
