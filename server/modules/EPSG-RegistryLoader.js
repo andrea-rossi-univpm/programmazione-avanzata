@@ -13,7 +13,8 @@ const logger = singletoneLogger.getInstance();
 
 
 const fs = require('fs');
-const epsgFilePath = "../assets/epsg";
+//relative path using './' and not '../' since this is included in index.js
+const epsgFilePath = "./assets/epsg";
 logger.LOG_DEBUG(`Parsing EPSG registry from ${epsgFilePath}`);
 
 let registry = [];
@@ -23,42 +24,52 @@ if(!fs.existsSync(epsgFilePath)) {
     logger.LOG_FATAL("File not found");
 } else {
     const nReadlines = require('n-readlines');
-    const broadbandLines = new nReadlines('broadband.sql');
+    const performance = require('perf_hooks').performance;
+    const broadbandLines = new nReadlines(epsgFilePath);
 
     let line;
     let lineNumber = 1;
 
+    const startTime = performance.now()
+
+    //last line  (.next()) will return false since is in while condition will exit
     while (line = broadbandLines.next()) {
-        console.log(`Line ${lineNumber} has: ${line.toString('ascii')}`);
-        lineNumber++;
-    }
-   
-}
-
-if(!(users && users instanceof Array && users.length > 0)) {
-    logger.LOG_FATAL('Failed loading Users module');
-    //process.exit(1); 
-    //force the process to exit killing also async pending tasks (including I/O)
-  }
-
-//redis will have key-value for [key: email], [value: credits]
-//I have to check for duplicates entries (assuming email as primary key)
-
-let hasDuplicateValue = false;
-let duplicateValue = undefined;
-//sort elements of an array in place, then using a compare function can see if (already sorted array) current and next are equal
-users.map(x => x['Email']).sort().sort((a,b) => {
-        if(a === b) {
-            hasDuplicateValue = true;
-            duplicateValue = b;
+        if(!line) {
+            logger.LOG_WARNING(`Discarded line number ${lineNumber++}`);
+            continue;
+        } 
+        const lineToParse = line.toString('ascii');
+        //If line is a comment
+        if(lineToParse.startsWith("#"))  {
+            lineNumber++;
+            continue;
         }
-});
-if(hasDuplicateValue === true) {
-        //exit
-        logger.LOG_FATAL(`Duplicate EMAIL value: ${duplicateValue}`);
+            
+        
+        /* 
+            Element to add to registry is like:
+            [
+                "EPSG:32633", 
+                "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs"
+            ] 
+        */
+        // first line to parse: <3819> +proj=longlat +ellps=bessel +towgs84=595.48,121.69,515.35,4.115,-2.9383,0.853,-3.408 +no_defs  <>
+        try {
+            const result = lineToParse.split('<')[1].split('>').map( x => x.trim());
+            registry.push(result);
+        } catch (err) {
+            logger.LOG_ERROR(`Error while decoding [${lineNumber}]: '${lineToParse}', error: ${err}`);
+        } finally {
+            lineNumber++;
+        }
+    }
+
+    if(!(registry && registry instanceof Array && registry.length > 0))
+        logger.LOG_FATAL('Empty registry');
+
+    const endTime = performance.now();
+    logger.LOG_INFO(`EPSG registry file loaded successfully with ${registry.length} entries in ${Math.trunc(endTime - startTime)} milliseconds`);
+    module.exports = registry;
 }
 
-module.exports = users;
-//using MAP and JOIN to beautify output
-const usersCaption = users.map( e => e['Username'] ).join(", ");
-logger.LOG_INFO(`User${users.length > 1 ? 's' :''} loaded from File (${users.length}):\t${usersCaption}`);
+

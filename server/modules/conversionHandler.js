@@ -109,3 +109,9 @@ LatLonCoordinates.Longitude = 30;
 console.log(LatLonCoordinates); // 30,30
 LatLonCoordinates.Latitude = 300; //exc
 LatLonCoordinates.Longitude= 300; //exc */
+
+module.exports = {
+   _setEPSGRegistry: function(registry) {
+      proj4jsLIB.defs(registry);
+   }
+};

@@ -41,7 +41,11 @@ const enumHTTPStatusCodes = require("./models/httpsStatusCode");
 const CErrorFactory = require("./modules/error-factory");
 const errorFactory = new CErrorFactory();
 
+//loading registry once and then pass to proj4j helper
+const epsgRegistry = require("./modules/EPSG-RegistryLoader");
+
 const proj4j = require("./modules/conversionHandler");
+proj4j._setEPSGRegistry(epsgRegistry);
 
 //Express Framework
 const express = require('express');

@@ -9,6 +9,7 @@ const logger = singletoneLogger.getInstance();
 const errorFactory = new CErrorFactory(); */
 
 const fs = require('fs');
+//relative path using './' and not '../' since this is included in index.js
 const usersFilePath = "./assets/users.json";
 logger.LOG_DEBUG(`Loading users from ${usersFilePath}`);
 
