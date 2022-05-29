@@ -31,7 +31,7 @@ if(!(users && users instanceof Array && users.length > 0)) {
     logger.LOG_FATAL('Failed loading Users module');
     //process.exit(1); 
     //force the process to exit killing also async pending tasks (including I/O)
-  }
+}
 
 //redis will have key-value for [key: email], [value: credits]
 //I have to check for duplicates entries (assuming email as primary key)

@@ -45,7 +45,13 @@ const errorFactory = new CErrorFactory();
 const epsgRegistry = require("./modules/EPSG-RegistryLoader");
 
 const proj4j = require("./modules/conversionHandler");
-proj4j._setEPSGRegistry(epsgRegistry);
+try {
+  proj4j._setEPSGRegistry(epsgRegistry);
+} catch (err) {
+  logger.LOG_ERROR("Unable to apply EPSG registry to proj4j using defs function");
+  logger.LOG_FATAL(err);
+}
+
 
 //Express Framework
 const express = require('express');
