@@ -3,38 +3,32 @@
 const singletoneLogger = require("../modules/logger-singleton");
 const logger = singletoneLogger.getInstance();
 
-//WGS84 
-const latMax = 90.0000000;
-const latMin = -90.0000000;
-
-const longMax = 180.0000000;
-const longMin = -180.0000000;
-
 
 let validator = {
   set(obj, prop, value) {
     switch(prop) {
       case 'Latitude':
-        if (!Number.isInteger(value)) {
-          logger.LOG_ERROR('Latitue is not an integer');
-          return false;
+        if (value === null || value === undefined) {
+          logger.LOG_FATAL('Latitue is undefined');
+          //return false;
+        } else if(!Number.isInteger(value)) {
+          logger.LOG_FATAL('Latitue is not an integer');
+          //return false;
         }
-        /* if (value > latMax || value < latMin) {
-          logger.LOG_ERROR(`Latitude out of range ${latMin}~${latMax}`);
-          return false;
-        } */
+       
         //storing the value
         obj[prop] = value;
         break;
       case 'Longitude':
-        if (!Number.isInteger(value)) {
-          logger.LOG_ERROR('Longitude is not an integer');
-          return false;
+        if (value === null || value === undefined) {
+          logger.LOG_FATAL('Longitude is undefined');
+          //return false;
         }
-        /* if (value > longMax || value < longMin) {
-          logger.LOG_ERROR(`Longitude out of range ${latMin}~${latMax}`);
-          return false;
-        } */
+        if (!Number.isInteger(value)) {
+          logger.LOG_FATAL('Longitude is not an integer');
+          //return false;
+        }
+       
         //storing the value
         obj[prop] = value;
         break;
@@ -43,8 +37,10 @@ let validator = {
 
     }
     // Indicate success
-    return true;
+    //return true;
   }
 };
+
+//If there is an error using LOG_FATAL will raise an exception that will be caught in the caller function
 
 module.exports = LatLongCoordinates  = new Proxy({}, validator);

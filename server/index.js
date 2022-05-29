@@ -103,6 +103,7 @@ function verifyAndAuthenticate(req,res,next){
       errorFactory.getError(
         enumHTTPStatusCodes.Unauthorazied).getMsg() + 
         ": JWT verification failed");
+    //passing also a dynamic status code to error handler
     err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
     next(err);
   }
@@ -135,6 +136,56 @@ app.get('/about', function (req, res) {
 
 app.get('/getUsers', function (req, res) {
   res.send(users);
+});
+
+app.post('/convertLatLong', function (req, res) {
+  const params =  req.body;
+  if(!params || Object.keys(params).length === 0) {
+    //why next does not work?
+    errorHandler(
+      new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"),
+      req, //req
+      res,
+      null
+    );
+  } else {
+    const coupleCoordinates = params.coupleCoordinates;
+    if(coupleCoordinates) {
+      errorHandler(
+        new Error(errorFactory.getError(enumHTTPStatusCodes.BadGateway).getMsg() + ": Couple of coordinates undefined"),
+        req, //req
+        res,
+        null
+      );
+    } else {
+      let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
+      //protecting against bad requests
+      try {
+        coordinatesLatLonProxy.Latitude = coupleCoordinates.Latitude;
+        coordinatesLatLonProxy.Longitude = coupleCoordinates.Longitude;
+      } catch(err) {
+        errorHandler(
+          new Error(errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${err}`),
+          req, //req
+          res,
+          null
+        );
+      }
+
+      try {
+        const conversionResult = proj4j._convertLatLong(coordinatesLatLonProxy);
+        res.status(200).send(conversionResult);
+      } catch(err) {
+        errorHandler(
+          //422
+          new Error(errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${err}`),
+          req, //req
+          res,
+          null
+        );
+      }
+    }
+  }
 });
 
 app.post('/addCredit', function (req, res) {
