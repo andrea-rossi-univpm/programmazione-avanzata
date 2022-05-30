@@ -142,47 +142,44 @@ app.post('/convertLatLong', function (req, res) {
   const params =  req.body;
   if(!params || Object.keys(params).length === 0) {
     //why next does not work?
-    errorHandler(
-      new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"),
-      req, //req
-      res,
-      null
+    let err = new Error(
+      errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"
     );
+    err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+    errorHandler(err, req, res, null);
   } else {
     const coupleCoordinates = params.coupleCoordinates;
     if(coupleCoordinates) {
-      errorHandler(
-        new Error(errorFactory.getError(enumHTTPStatusCodes.BadGateway).getMsg() + ": Couple of coordinates undefined"),
-        req, //req
-        res,
-        null
-      );
+        let err = new Error(
+          errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ": Couple of coordinates undefined"
+        );
+        err.StatusCode = enumHTTPStatusCodes.BadRequest;
+        errorHandler(err, req, res, null);
     } else {
       let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
       //protecting against bad requests
       try {
         coordinatesLatLonProxy.Latitude = coupleCoordinates.Latitude;
         coordinatesLatLonProxy.Longitude = coupleCoordinates.Longitude;
-      } catch(err) {
-        errorHandler(
-          new Error(errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${err}`),
-          req, //req
-          res,
-          null
+      } catch(ex) {
+        //Proxy validator exception (err is already defined so I'll rewrite it)
+        let err = new Error(
+          errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${ex}`
         );
+        err.StatusCode = enumHTTPStatusCodes.BadRequest;
+        errorHandler(err, req, res, null);
       }
 
       try {
         const conversionResult = proj4j._convertLatLong(coordinatesLatLonProxy);
         res.status(200).send(conversionResult);
-      } catch(err) {
-        errorHandler(
-          //422
-          new Error(errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${err}`),
-          req, //req
-          res,
-          null
+      } catch(ex) {
+        //proj4j lib could not convert so it's an unprocessable entity error code
+        let err = new Error(
+          errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${ex}`
         );
+        err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+        errorHandler(err, req, res, null);
       }
     }
   }
@@ -195,30 +192,32 @@ app.post('/addCredit', function (req, res) {
   } */
   const params =  req.body;
   if(!params || Object.keys(params).length === 0) {
-    //why next does not work?
-    errorHandler(
-      new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"),
-      req, //req
-      res,
-      null
+    
+    let err = new Error(
+      errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` Invalid request Body`
     );
+    err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+    errorHandler(err, req, res, null);
+
   } else {
     logger.LOG_INFO('add credit body: '+ params);
     if((users.find(x => x['Email'] === params.Email) === undefined)) {
-      errorHandler(
-        new Error(errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + `Email: ${params.Email} not found`),
-        req, //req
-        res,
-        null
+
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` Email: ${params.Email} not found`
       );
+      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+      errorHandler(err, req, res, null);
+
       return;
     } else if ( !Number.isInteger(params.CreditToAdd) || params.CreditToAdd <= 0){
-      errorHandler(
-        new Error(errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: Invalid credit.`),
-        null, //req
-        res,
-        null
+
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` Invalid credit.`
       );
+      err.StatusCode = enumHTTPStatusCodes.BadRequest;
+      errorHandler(err, req, res, null);
+
     } else {
       const CreditToAdd = params.CreditToAdd;
       const Email = params.Email;
@@ -231,13 +230,13 @@ app.post('/addCredit', function (req, res) {
             `Added ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
           res.sendStatus(200);
         }
-      } catch(err) {
-        errorHandler(
-          new Error(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: ${err}`),
-          null, //req
-          res,
-          null
+      } catch(ex) {
+        let err = new Error(
+          errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: ${ex}`
         );
+        err.StatusCode = enumHTTPStatusCodes.BadRequest;
+        errorHandler(err, req, res, null);
+
       }
     }
   }
