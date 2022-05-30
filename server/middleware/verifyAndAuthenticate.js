@@ -19,8 +19,8 @@ const verifyAndAuthenticate = function(req, res, next) {
           err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
           next(err);
         }
-
-        if((users.find(x => x['Email'] === req.email) === undefined)) {
+        //accessing global variable through req.app.locals
+        if((req.app.locals.users.find(x => x['Email'] === req.email) === undefined)) {
           let err = new Error(
             errorFactory.getError(
               enumHTTPStatusCodes.Unauthorazied).getMsg() + 

@@ -60,6 +60,8 @@ const cors = require('cors');
 const req = require("express/lib/request");
 const registry = require('./modules/EPSG-RegistryLoader');
 const app = express();
+//declaring a global variable 
+app.locals.users = users; //
 app.use(express.json()); // for parsing request body as JSON
 
 
