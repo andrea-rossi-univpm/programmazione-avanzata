@@ -7,7 +7,7 @@ module.exports = enumHTTPStatusCodes = {
     PermanentRedirect: 308,
     //Client Errors
     BadRequest: 400,
-    Unauthorazied: 401,
+    Unauthorized: 401,
     Forbidden: 403,
     NotFound: 404,
     Conflict: 409,

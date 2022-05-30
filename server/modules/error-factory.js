@@ -30,9 +30,9 @@ class BadRequest extends CMsg {
         return `Bad Request`;
     }
 }
-class Unauthorazied extends CMsg {
+class Unauthorized extends CMsg {
     getMsg() {
-        return `Unauthorazied`;
+        return `Unauthorized`;
     }
 }
 class Forbidden extends CMsg {
@@ -125,8 +125,8 @@ class CErrorFactory {
             case enumHTTPStatusCodes.BadRequest:
                 retval = new BadRequest();
                 break;
-            case enumHTTPStatusCodes.Unauthorazied:
-                retval = new Unauthorazied();
+            case enumHTTPStatusCodes.Unauthorized:
+                retval = new Unauthorized();
                 break;
             case enumHTTPStatusCodes.Forbidden:
                 retval = new Forbidden();

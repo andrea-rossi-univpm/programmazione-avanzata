@@ -90,7 +90,7 @@ app.post('/convertLatLong', function (req, res) {
     let err = new Error(
       errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"
     );
-    err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+    err.StatusCode = enumHTTPStatusCodes.Unauthorized;
     errorHandler(err, req, res, null);
   } else {
     const coupleCoordinates = params.coupleCoordinates;
@@ -130,7 +130,8 @@ app.post('/convertLatLong', function (req, res) {
   }
 });
 
-app.post('/addCredit', function (req, res) {
+//using custom middleware only for this api to verify user role (role back-end side)
+app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, res) {
   //check admin role
   /* if(req.user.Role !== 'Administrator') {
     return res.status(401).send({"error": 'User must be Administrator'});
@@ -181,7 +182,6 @@ app.post('/addCredit', function (req, res) {
         );
         err.StatusCode = enumHTTPStatusCodes.BadRequest;
         errorHandler(err, req, res, null);
-
       }
     }
   }

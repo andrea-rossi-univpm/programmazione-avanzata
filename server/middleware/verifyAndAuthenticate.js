@@ -1,5 +1,6 @@
 const CErrorFactory = require("../modules/error-factory");
 const errorFactory = new CErrorFactory();
+const enumHTTPStatusCodes = require("../models/httpsStatusCode");
 
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
@@ -14,18 +15,18 @@ const verifyAndAuthenticate = function(req, res, next) {
         else {
           let err = new Error(
             errorFactory.getError(
-              enumHTTPStatusCodes.Unauthorazied).getMsg() + 
+              enumHTTPStatusCodes.Unauthorized).getMsg() + 
               `: Missing Email`);
-          err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+          err.StatusCode = enumHTTPStatusCodes.Unauthorized;
           next(err);
         }
         //accessing global variable through req.app.locals
         if((req.app.locals.users.find(x => x['Email'] === req.email) === undefined)) {
           let err = new Error(
             errorFactory.getError(
-              enumHTTPStatusCodes.Unauthorazied).getMsg() + 
+              enumHTTPStatusCodes.Unauthorized).getMsg() + 
               `: Invalid mail ${req.email}`);
-          err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+          err.StatusCode = enumHTTPStatusCodes.Unauthorized;
           next(err);
         } else {
           next();
@@ -33,18 +34,18 @@ const verifyAndAuthenticate = function(req, res, next) {
       } else {
         let err = new Error(
           errorFactory.getError(
-            enumHTTPStatusCodes.Unauthorazied).getMsg() + 
+            enumHTTPStatusCodes.Unauthorized).getMsg() + 
             ": JWT verification failed");
         //passing also a dynamic status code to error handler
-        err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+        err.StatusCode = enumHTTPStatusCodes.Unauthorized;
         next(err);
       }
     } catch(ex) {
       let err = new Error(
         errorFactory.getError(
-          enumHTTPStatusCodes.Unauthorazied).getMsg() + 
+          enumHTTPStatusCodes.Unauthorized).getMsg() + 
           `: JWT Verification failed: ${ex}`);
-      err.StatusCode = enumHTTPStatusCodes.Unauthorazied;
+      err.StatusCode = enumHTTPStatusCodes.Unauthorized;
       next(err);
     }
   }

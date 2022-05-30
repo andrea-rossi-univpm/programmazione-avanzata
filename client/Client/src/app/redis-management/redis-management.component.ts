@@ -1,3 +1,4 @@
+import { SwalDialogService } from './../services/dialog-service';
 import { UsersModel } from './../models/users';
 import { Component, OnInit } from '@angular/core';
 import { ApiService } from '../services/api.service';
@@ -10,7 +11,10 @@ import Swal from 'sweetalert2';
 export class RedisManagementComponent implements OnInit {
 
   users: UsersModel[];
-  constructor(private apiService: ApiService) { }
+  constructor(
+    private apiService: ApiService,
+    private dialogService: SwalDialogService
+    ) { }
 
   ngOnInit(): void {
     this.loadUsers();
@@ -52,7 +56,7 @@ export class RedisManagementComponent implements OnInit {
               //then update UI for credits (when credits will be implemented in get method)
             }
           }, err => {
-            Swal.fire('Error',err.error.error,'error');
+            this.dialogService.showErrorDialog('Error', err.error)
           }
         );
       } else {
