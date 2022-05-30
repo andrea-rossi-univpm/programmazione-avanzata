@@ -20,21 +20,21 @@ export class ApiService {
     return this.post(`createSample`, item);
   } */
 
-  getUsers(jwt: string): Observable<UsersModel[]> {
+  getUsers(): Observable<UsersModel[]> {
     return this.httpClient.get<UsersModel[]>(
       `${this.baseUrl}/getUsers`, {
         headers: {
-          Authorization: `Bearer ${environment.jwt}`,
+          Authorization: `Bearer ${environment.userJWT}`,
         }
       }
     );
   }
 
-  getEPSG(jwt: string): Observable<string[]> {
+  getEPSG(): Observable<string[]> {
     return this.httpClient.get<string[]>(
       `${this.baseUrl}/getEPSG`, {
         headers: {
-          Authorization: `Bearer ${environment.jwt}`,
+          Authorization: `Bearer ${environment.userJWT}`,
         }
       }
     );
@@ -46,7 +46,7 @@ export class ApiService {
       contract, //contract into body
       {
         headers: {
-          Authorization: `Bearer ${environment.jwt}`
+          Authorization: `Bearer ${jwt}`
         },
         responseType: 'text' //if not specified could trap in err a 200 response
       }

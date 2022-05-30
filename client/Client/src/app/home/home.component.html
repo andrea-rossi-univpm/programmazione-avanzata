@@ -1,107 +1,47 @@
 <div class="w-100 d-flex justify-content-between">
 
-  <button class="btn btn-danger" (click)="test()">abra</button>
-
   <!-- card 1: lat/long - array chords-->
   <div class="card p-2 m-3">
 
     <div class="card-header">
-      <h5 class="card-title">Conversion</h5>
-      <h6 class="card-subtitle mb-2 text-muted"><strong>Couple Lat/Long chords</strong> and <strong>Chords
-          Array</strong></h6>
+      <h5 class="card-title">Lat/Lon Conversion</h5>
     </div>
     <div class="card-body">
       <!-- start FORM -->
-      <form [formGroup]="coupleLatLong_ArrayChords_Form">
+      <form [formGroup]="CoupleLatLonForm">
         <div class="row">
           <div class="col-6">
-            <label for="latitude">Latitude: </label>
-            <input class="form-control" id="latitude" type="text" formControlName="latitude">
+            <label for="Latitude">Latitude: </label>
+            <input class="form-control" id="Latitude" type="text" formControlName="Latitude">
           </div>
           <div class="col-6">
-            <label for="longitude">Longitude: </label>
-            <input class="form-control" id="latitude" type="text" formControlName="longitude">
+            <label for="Longitude">Longitude: </label>
+            <input class="form-control" id="Longitude" type="text" formControlName="Longitude">
           </div>
         </div>
         <div class="row">
-          <div class="col-12">
-            <label for="arrayChords">Array Chords: </label>
-            <input class="form-control" id="arrayChords" type="text" formControlName="arrayChords">
-
+          <div class="col-6">
+            <label for="typeahead-focus">EPSG Source</label>
+            <input
+              [disabled]="this.registry === null || this.registry === undefined || this.registry.length === 0 "
+              id="typeahead-focus"
+              type="text"
+              class="form-control"
+              formControlName="Source"
+              [ngbTypeahead]="search"
+              (focus)="focus$.next($any($event).target.value)"
+              (click)="click$.next($any($event).target.value)"
+              #instance="ngbTypeahead"
+            />
           </div>
         </div>
       </form>
       <!-- end FORM -->
-      <a (click)="LatLongToArrayChords()" class="btn btn-primary w-100 mt-2">Lat/Long to Array Chords</a>
-      <a (click)="ArrayChordsToLatLong()" class="btn btn-primary w-100 mt-2">Array Chords to Lat/Long</a>
-    </div>
-  </div>
-
-  <!-- card 3: arrayChords - geoJSON-->
-  <div class="card  p-2 m-3">
-
-    <div class="card-header">
-      <h5 class="card-title">Conversion</h5>
-      <h6 class="card-subtitle mb-2 text-muted"><strong>ArrayChords</strong> and <strong>geoJSON</strong></h6>
-    </div>
-    <div class="card-body">
-      <!-- start FORM -->
-      <form [formGroup]="ArrayChords_geoJSON_Form">
-        <div class="row">
-          <div class="col-12">
-            <label for="arrayChords">Array Chords: </label>
-            <input class="form-control" id="arrayChords" type="text" formControlName="arrayChords">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <label for="geoJSON">GeoJSON: </label>
-            <input class="form-control" id="geoJSON" type="text" formControlName="geoJSON">
-
-          </div>
-        </div>
-      </form>
-      <!-- end FORM -->
-      <a (click)="ArrayChordsToGeoJSON()" class="btn btn-primary w-100 mt-2">ArrayChords to geoJSON</a>
-      <a (click)="GeoJSONToArrayChords()" class="btn btn-primary w-100 mt-2">GeoJSON to ArrayChords</a>
+      <a (click)="LatLongConversion()" class="btn btn-primary w-100 mt-2">Convert</a>
     </div>
   </div>
 
 
-  <!-- card 2: lat/long - geoJSON-->
-  <div class="card p-2 m-3">
-
-    <div class="card-header">
-      <h5 class="card-title">Conversion</h5>
-      <h6 class="card-subtitle mb-2 text-muted"><strong>Couple Lat/Long chords</strong> and <strong>geoJSON</strong>
-      </h6>
-    </div>
-    <div class="card-body">
-      <!-- start FORM -->
-      <form [formGroup]="coupleLatLong_geoJSON_Form">
-        <div class="row">
-          <div class="col-6">
-            <label for="latitude">Latitude: </label>
-            <input class="form-control" id="latitude" type="text" formControlName="latitude">
-          </div>
-          <div class="col-6">
-            <label for="longitude">Longitude: </label>
-            <input class="form-control" id="latitude" type="text" formControlName="longitude">
-          </div>
-        </div>
-        <div class="row">
-          <div class="col-12">
-            <label for="geoJSON">GeoJSON: </label>
-            <input class="form-control" id="geoJSON" type="text" formControlName="geoJSON">
-
-          </div>
-        </div>
-      </form>
-      <!-- end FORM -->
-      <a (click)="LatLongToGeoJSON()" class="btn btn-primary w-100 mt-2">Lat/Long to geoJSON</a>
-      <a (click)="GeoJSONToLatLong()" class="btn btn-primary w-100 mt-2">GeoJSON to Lat/Long</a>
-    </div>
-  </div>
 
 
 </div>

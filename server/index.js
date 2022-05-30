@@ -188,7 +188,7 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, re
 });
 
 app.get('/getEPSG', function (req, res) {
-  res.send(registry);
+  res.send(registry.map(x => 'EPSG:' + x[0]));
 });
 
 //////////////////////////////////////////////////////////////////////////////////////////////////

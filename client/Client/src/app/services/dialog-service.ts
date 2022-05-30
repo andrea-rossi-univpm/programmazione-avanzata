@@ -77,40 +77,24 @@ export class SwalDialogService {
   } */
 
 
-  async showCredentialsDialog(): Promise<void | CredentialsModel>{
+  async showCredentialsDialog(): Promise<void | string>{
+
+    let myInputOptions: Map<string, string> = new Map<string, string>();
+    myInputOptions.set(environment.userJWT, 'AROSSI JWT');
+    myInputOptions.set(environment.adminJWT, 'AMANCINI JWT');
+    myInputOptions.set('1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ!', 'MALFORMED JWT');
+
     let swalResult = await Swal.fire<any>({
-      title: 'Auth',
-      html: `
-        <div class="form-group">
-          <label for="email">Email:</label>
-          <input type="email" id="email" class="swal2-input" placeholder="Email" value="andrea@">
-        </div>
-        <div class="form-group">
-          <label for="token">Token:</label>
-          <input type="text" id="token" class="swal2-input" placeholder="JWT Token"
-            value="${environment.apiURL}"
-          >
-        </div>
-      `,
+      title: 'Select auth token',
+      input: 'select',
+      inputOptions: myInputOptions,
       width: '750px',
       showCancelButton: true,
       showLoaderOnConfirm: true,
-      preConfirm: () => {
-        const _email = (Swal.getPopup()?.querySelector('#email') as any).value;
-        const _token = (Swal.getPopup()?.querySelector('#token')as any).value;
-        if (!_email || !_token) {
-          Swal.showValidationMessage('Invalid form');
-        }
-        return { email: _email, token: _token };
-      }
-
     });
 
-    if(swalResult && swalResult.value) {
-      const auth = new CredentialsModel();
-      auth.Email = swalResult.value._email;
-      auth.Token = swalResult.value._token;
-      return Promise.resolve(auth);
+    if(swalResult && swalResult.value && swalResult.isConfirmed === true) {
+      return Promise.resolve(swalResult.value);
     } else {
       return Promise.reject('');
     }
