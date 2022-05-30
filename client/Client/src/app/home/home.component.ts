@@ -1,7 +1,9 @@
+import { SwalDialogService } from './../services/dialog-service';
 import { Component, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import Swal from 'sweetalert2';
 import { ArrayChords_geoJSON_Contract, coupleLatLong_ArrayChords_Contract, coupleLatLong_GeoJSON_Contract } from '../models/contracts';
+import { ApiService } from '../services/api.service';
 
 @Component({
   selector: 'app-home',
@@ -10,9 +12,32 @@ import { ArrayChords_geoJSON_Contract, coupleLatLong_ArrayChords_Contract, coupl
 })
 export class HomeComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private apiService: ApiService,
+    private dialogService: SwalDialogService
+  ) { }
+
+  registry: string[];
 
   ngOnInit(): void {
+    //loading EPSG registry
+    this.apiService.getEPSG('JWT').subscribe((x: string[]) => {
+      if(x) {
+        this.registry = x;
+        console.log(this.registry)
+      }
+    }, err => {
+      Swal.fire('Error',err.error.error,'error');
+    });
+
+  }
+
+  test() {
+    this.dialogService.showCredentialsDialog().then( x => {
+      if(x) {
+        alert('we');
+      }
+    });
   }
 
   coupleLatLong_ArrayChords_Form = new FormGroup({

@@ -30,6 +30,16 @@ export class ApiService {
     );
   }
 
+  getEPSG(jwt: string): Observable<string[]> {
+    return this.httpClient.get<string[]>(
+      `${this.baseUrl}/getEPSG`, {
+        headers: {
+          Authorization: `Bearer ${jwt}`,
+        }
+      }
+    );
+  }
+
   AddCredit(contract: AddCreditContract, jwt: string): Observable<Object> {
     return this.httpClient.post(
       `${this.baseUrl}/addCredit`, //url
