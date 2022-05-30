@@ -13,6 +13,7 @@ const logger = singletoneLogger.getInstance();
 //reading from .env file (only strings) If not defined port/ip default set available with ||
 const nodePort = process.env.NODE_PORT || 3000; 
 const nodeIP = process.env.NODE_IP || '0.0.0.0'; //all interfaces of machine
+
 const authWall = true;
 const privateKey = process.env.SECRET_KEY;
 //If authWall is false I don't care about missing key or logging it

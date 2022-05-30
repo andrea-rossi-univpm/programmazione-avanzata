@@ -1,4 +1,5 @@
 import { Injectable } from "@angular/core";
+import { environment } from "src/environments/environment";
 import Swal, { SweetAlertIcon } from "sweetalert2";
 import { CredentialsModel } from "../models/users";
 
@@ -8,7 +9,8 @@ import { CredentialsModel } from "../models/users";
 export class SwalDialogService {
 
 
-  constructor() {}
+  constructor(
+  ) {}
 
   showSuccessDialog(title: string, msg: string) {
     this.showDialog(title, msg, 'success');
@@ -85,9 +87,12 @@ export class SwalDialogService {
         </div>
         <div class="form-group">
           <label for="token">Token:</label>
-          <input type="text" id="token" class="swal2-input" placeholder="JWT Token" value="abcdefghijkl">
+          <input type="text" id="token" class="swal2-input" placeholder="JWT Token"
+            value="${environment.apiURL}"
+          >
         </div>
       `,
+      width: '750px',
       showCancelButton: true,
       showLoaderOnConfirm: true,
       preConfirm: () => {

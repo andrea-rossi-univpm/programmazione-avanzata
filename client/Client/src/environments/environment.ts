@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  apiURL: 'http://localhost:3000'
+  apiURL: 'http://localhost:3000',
+  jwt: 'eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJpc3MiOiJPbmxpbmUgSldUIEJ1aWxkZXIiLCJpYXQiOjE2NTM5MTgzOTMsImV4cCI6MTY4NTQ1NDM5MywiYXVkIjoid3d3LmV4YW1wbGUuY29tIiwic3ViIjoiQVJPU1NJIiwiRW1haWwiOiJhbmRyZWEucm9zc2lAdW5pdnBtLml0IiwiUm9sZSI6IlVzZXIifQ.qtVuC28jh3zNuegIlOBEhkwYqJf2mMmK3PARaocp4rg'
 };
 
 /*

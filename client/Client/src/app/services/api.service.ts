@@ -24,7 +24,7 @@ export class ApiService {
     return this.httpClient.get<UsersModel[]>(
       `${this.baseUrl}/getUsers`, {
         headers: {
-          Authorization: `Bearer ${jwt}`,
+          Authorization: `Bearer ${environment.jwt}`,
         }
       }
     );
@@ -34,7 +34,7 @@ export class ApiService {
     return this.httpClient.get<string[]>(
       `${this.baseUrl}/getEPSG`, {
         headers: {
-          Authorization: `Bearer ${jwt}`,
+          Authorization: `Bearer ${environment.jwt}`,
         }
       }
     );
@@ -46,7 +46,7 @@ export class ApiService {
       contract, //contract into body
       {
         headers: {
-          Authorization: `Bearer ${jwt}`
+          Authorization: `Bearer ${environment.jwt}`
         },
         responseType: 'text' //if not specified could trap in err a 200 response
       }
