@@ -5,8 +5,8 @@ export class CoupleLatLonFormContract {
   Destination: any;
 }
 
-export class ArrayOfCoordinatesContract {
-  ArrayOfCoordinates: [];
+export class ArrayLatLonContract {
+  ArrayLatLon: number[][];
   Source: any;
   Destination: any;
 }

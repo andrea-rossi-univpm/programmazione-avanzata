@@ -1,0 +1,27 @@
+<div class="card p-2 m-3">
+
+  <div class="card-header">
+    <h5 class="card-title">Lat/Lon Conversion</h5>
+  </div>
+  <div class="card-body">
+    <!-- start FORM -->
+    <form [formGroup]="CoupleLatLonForm">
+      <div class="row">
+        <div class="col-6">
+          <label for="Latitude">Latitude: </label>
+          <input class="form-control" id="Latitude" type="text" formControlName="Latitude">
+        </div>
+        <div class="col-6">
+          <label for="Longitude">Longitude: </label>
+          <input class="form-control" id="Longitude" type="text" formControlName="Longitude">
+        </div>
+      </div>
+      <app-source-destination-box
+        [form]="CoupleLatLonForm"
+        [EPSGRegistry]="this.registry"
+      ></app-source-destination-box>
+    </form>
+    <!-- end FORM -->
+    <a (click)="Conversion()" class="btn btn-primary w-100 mt-2">Convert</a>
+  </div>
+</div>

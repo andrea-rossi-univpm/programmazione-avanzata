@@ -13,6 +13,9 @@ import { HttpClientModule } from '@angular/common/http';
 import { SwalDialogService } from './services/dialog-service';
 import { EpsgTypeAheadComponent } from './sub-component/epsg-type-ahead/epsg-type-ahead.component';
 import { SourceDestinationBoxComponent } from './sub-component/source-destination-box/source-destination-box.component';
+import { CoupleLatLonComponent } from './conversion/couple-lat-lon/couple-lat-lon.component';
+import { ArrayLatLonComponent } from './conversion/array-lat-lon/array-lat-lon.component';
+import { GeoJSONComponent } from './conversion/geo-json/geo-json.component';
 
 @NgModule({
   declarations: [
@@ -21,7 +24,10 @@ import { SourceDestinationBoxComponent } from './sub-component/source-destinatio
     RedisManagementComponent,
     NotFoundComponent,
     EpsgTypeAheadComponent,
-    SourceDestinationBoxComponent
+    SourceDestinationBoxComponent,
+    CoupleLatLonComponent,
+    ArrayLatLonComponent,
+    GeoJSONComponent
   ],
   imports: [
     BrowserModule,

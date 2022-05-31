@@ -1,0 +1,50 @@
+<div class="card p-2 m-3">
+
+  <div class="card-header">
+    <div class="row">
+      <div class="col-10">
+        <h5 class="card-title">Array Lat/Lon Conversion</h5>
+      </div>
+      <div class="col-2">
+        <button class="btn btn-success" (click)="addItem()">+</button>
+      </div>
+    </div>
+
+  </div>
+  <div class="card-body">
+    <!-- start FORM -->
+    <form [formGroup]="ArrayLatLonForm">
+      <div class="wrapper">
+        <ng-container formArrayName="ArrayLatLon">
+          <ng-container *ngFor="let ArrayLatLonForm of ArrayLatLon.controls; let i = index">
+
+            <div class="item-form-row" [formGroup]="ArrayLatLonForm">
+              <div class="row">
+                <div class="col-5">
+                  <label for="Latitude">Latitude: </label>
+                  <input class="form-control" id="Latitude" type="text" formControlName="Latitude">
+                </div>
+                <div class="col-5">
+                  <label for="Longitude">Longitude: </label>
+                  <input class="form-control" id="Longitude" type="text" formControlName="Longitude">
+                </div>
+                <div class="col-2 col-md-2 align-self-end">
+                  <button class="btn btn-danger" (click)="deleteItem(i)"> - </button>
+                </div>
+              </div>
+            </div>
+
+          </ng-container>
+        </ng-container>
+      </div>
+
+      <app-source-destination-box
+        [form]="ArrayLatLonForm"
+        [EPSGRegistry]="this.registry"
+      ></app-source-destination-box>
+
+    </form>
+    <!-- end FORM -->
+    <a (click)="Conversion()" class="btn btn-primary w-100 mt-2">Convert</a>
+  </div>
+</div>

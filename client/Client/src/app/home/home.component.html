@@ -1,35 +1,18 @@
+
 <div class="w-100 d-flex justify-content-between">
+  <!-- COUPLE LAT-LON-->
+  <app-couple-lat-lon *ngIf="this.registry" [registry]="this.registry"></app-couple-lat-lon>
+  <!-- ARRAY OF LAT/LON-->
+  <app-array-lat-lon *ngIf="this.registry" [registry]="this.registry"></app-array-lat-lon>
+  <!-- GEO JSON-->
+  <app-geo-json *ngIf="this.registry" [registry]="this.registry"></app-geo-json>
+</div>
 
-  <!-- card 1: lat/long - array chords-->
-  <div class="card p-2 m-3">
 
-    <div class="card-header">
-      <h5 class="card-title">Lat/Lon Conversion</h5>
-    </div>
-    <div class="card-body">
-      <!-- start FORM -->
-      <form [formGroup]="CoupleLatLonForm">
-        <div class="row">
-          <div class="col-6">
-            <label for="Latitude">Latitude: </label>
-            <input class="form-control" id="Latitude" type="text" formControlName="Latitude">
-          </div>
-          <div class="col-6">
-            <label for="Longitude">Longitude: </label>
-            <input class="form-control" id="Longitude" type="text" formControlName="Longitude">
-          </div>
-        </div>
-        <app-source-destination-box
-          [form]="CoupleLatLonForm"
-          [EPSGRegistry]="this.registry"
-        ></app-source-destination-box>
-      </form>
-      <!-- end FORM -->
-      <a (click)="LatLongConversion()" class="btn btn-primary w-100 mt-2">Convert</a>
-    </div>
+<div class="fixed-bottom" style="margin-bottom: 10px !important;">
+  <div class="d-flex flex-row justify-content-center">
+    <h4>EPSG Registry entries: {{ this.registry.length }} </h4> &nbsp; &nbsp;
+   <!--  <button (click)="loadRegistry()" type="button p-2" class="btn btn-outline-primary">Reload Registry</button> -->
   </div>
-
-
-
 
 </div>
