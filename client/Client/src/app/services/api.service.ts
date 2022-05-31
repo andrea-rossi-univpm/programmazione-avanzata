@@ -4,6 +4,7 @@ import { AddCreditContract, UsersModel } from './../models/users';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
+import { CoupleLatLonFormContract } from '../models/contracts';
 
 @Injectable()
 export class ApiService {
@@ -47,6 +48,19 @@ export class ApiService {
       {
         headers: {
           Authorization: `Bearer ${jwt}`
+        },
+        responseType: 'text' //if not specified could trap in err a 200 response
+      }
+    );
+  }
+
+  convertLatLong(contract: CoupleLatLonFormContract): Observable<Object> {
+    return this.httpClient.post(
+      `${this.baseUrl}/convertLatLong`, //url
+      contract, //contract into body
+      {
+        headers: {
+          Authorization: `Bearer ${environment.userJWT}`
         },
         responseType: 'text' //if not specified could trap in err a 200 response
       }

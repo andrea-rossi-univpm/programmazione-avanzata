@@ -25,43 +25,13 @@
         "type": "Point",
         "coordinates": [43.234099, 13.628211]
      }
-
-  OPERATION:
-  Conversion:
-  Lat/Lon xyz 
-
-  EPSG:4326 -> EPSG:32633
-  EPSG:3857 ->  EPSG:4269
-
-  1) Lat/Long -> Array of Coordinates
-  2) Lat/Long -> geoJSON
-
-  3) Array of Coordinates -> Lat/Long
-  4) Array of Coordinates -> geoJSON
-
-  5) geoJSON -> Lat/Long
-  5) geoJSON -> Array of Coordinates
-
 */
 
 const proj4jsLIB = require("proj4");
 
-/* var sourceLatLong = new proj4jsLIB.Proj('EPSG:4326');  
-//var dest = new proj4jsLIB.Proj('EPSG:4269');  
-var dest = new proj4jsLIB.Proj('EPSG:3857');  
-
-// performing transformation
-var southWestOld = new proj4jsLIB.Point( xMin, yMin );   
-var northEastOld = new proj4jsLIB.Point( xMax, yMax ); 
-
-var southWestNew = proj4jsLIB.transform(sourceLatLong, dest, southWestOld);      
-var northEastNew = proj4jsLIB.transform(sourceLatLong, dest, northEastOld); 
-
-console.log("before: southWestOld,northEastOld", southWestOld, northEastOld);
-console.log("after: southWestNew,northEastNew", southWestNew, northEastNew); */
 
 //NOTE: [x,y] => [lon,lat]
-proj4jsLIB.defs([
+/* proj4jsLIB.defs([
    [
       "EPSG:32633", 
       "+proj=utm +zone=33 +datum=WGS84 +units=m +no_defs"
@@ -70,10 +40,11 @@ proj4jsLIB.defs([
       'EPSG:4326',
       '+title=WGS 84 (long/lat) +proj=longlat +ellps=WGS84 +datum=WGS84 +units=degrees'],
    ]
-);
+); */
 
 //correct business logic for lat long
-const test1 = proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] ); 
+/* const test1 = proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] ); 
+console.warn(test1) */
 // [51.57027349352602, -0.8461130514492281]
 
 /* //correct business logic for lat long
@@ -87,11 +58,6 @@ array.forEach(x => {
 });
 
 
-const test3 = proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] );  */
-            
-/* const test2 = proj4jsLIB('EPSG:27700','EPSG:4326')
-   .inverse( [ -0.846, 51.57 ] ); // lon, lat !!!  */
-// [480077.3157135821, 186311.70711789717]
 
 //geoJSON: when generated i have to specify
 //"coordinates": [43.234099, 13.628211]
@@ -101,25 +67,17 @@ const test3 = proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] );  */
    dest: 4326
 }  -> EXAMPLE of post request*/
 
-const LatLonCoordinates = require("../models/CoordinatesLatLon-Proxy");
-
-LatLonCoordinates.Latitude = 30;
-LatLonCoordinates.Longitude = 30;
-
-console.log(LatLonCoordinates); // 30,30
-LatLonCoordinates.Latitude = 300; //exc
-LatLonCoordinates.Longitude= 300; //exc */
 
 module.exports = {
    _setEPSGRegistry: function(registry) {
       proj4jsLIB.defs(registry);
    },
-   _convertLatLong: function(source, destination, coupleCoordinates) {
+   _convertLatLong: function(source, destination, Latitude, Longitude) {
       //proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] ); 
       return proj4jsLIB(source, destination).forward( 
          [
-            coupleCoordinates.Longitude, 
-            coupleCoordinates.Latitude
+            Longitude, 
+            Latitude
          ] 
       ); 
    },

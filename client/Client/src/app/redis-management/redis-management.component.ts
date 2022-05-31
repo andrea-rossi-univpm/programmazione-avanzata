@@ -50,10 +50,9 @@ export class RedisManagementComponent implements OnInit {
                 Email: email
               }, jwt).subscribe((x) => {
                   if(x) {
-                    Swal.fire(
+                    this.dialogService.showSuccessDialog(
                       'Success',
-                      `Added ${creditToAdd} credit${creditToAdd > 1 ? 's' : ''} to ${email}`,
-                      'success'
+                      `Added ${creditToAdd} credit${creditToAdd > 1 ? 's' : ''} to ${email}`
                     );
                     //then update UI for credits (when credits will be implemented in get method)
                   }

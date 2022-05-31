@@ -10,10 +10,10 @@ let validator = {
       case 'Latitude':
         if (value === null || value === undefined) {
           logger.LOG_FATAL('Latitue is undefined');
-          //return false;
+          return false;
         } else if(!Number.isInteger(value)) {
           logger.LOG_FATAL('Latitue is not an integer');
-          //return false;
+          return false;
         }
        
         //storing the value
@@ -22,11 +22,11 @@ let validator = {
       case 'Longitude':
         if (value === null || value === undefined) {
           logger.LOG_FATAL('Longitude is undefined');
-          //return false;
+          return false;
         }
         if (!Number.isInteger(value)) {
           logger.LOG_FATAL('Longitude is not an integer');
-          //return false;
+          return false;
         }
        
         //storing the value
@@ -37,7 +37,7 @@ let validator = {
 
     }
     // Indicate success
-    //return true;
+    return true;
   }
 };
 

@@ -93,39 +93,37 @@ app.post('/convertLatLong', function (req, res) {
     err.StatusCode = enumHTTPStatusCodes.Unauthorized;
     errorHandler(err, req, res, null);
   } else {
-    const coupleCoordinates = params.coupleCoordinates;
-    if(coupleCoordinates) {
-        let err = new Error(
-          errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ": Couple of coordinates undefined"
-        );
-        err.StatusCode = enumHTTPStatusCodes.BadRequest;
-        errorHandler(err, req, res, null);
-    } else {
-      let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
-      //protecting against bad requests
-      try {
-        coordinatesLatLonProxy.Latitude = coupleCoordinates.Latitude;
-        coordinatesLatLonProxy.Longitude = coupleCoordinates.Longitude;
-      } catch(ex) {
-        //Proxy validator exception (err is already defined so I'll rewrite it)
-        let err = new Error(
-          errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${ex}`
-        );
-        err.StatusCode = enumHTTPStatusCodes.BadRequest;
-        errorHandler(err, req, res, null);
-      }
+    let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
+    //protecting against bad requests
+    try {
+      coordinatesLatLonProxy.Latitude = params.Latitude;
+      coordinatesLatLonProxy.Longitude = params.Longitude;
+    } catch(ex) {
+      //Proxy validator exception (err is already defined so I'll rewrite it)
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.BadRequest;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
+    }
 
-      try {
-        const conversionResult = proj4j._convertLatLong(coordinatesLatLonProxy);
-        res.status(200).send(conversionResult);
-      } catch(ex) {
-        //proj4j lib could not convert so it's an unprocessable entity error code
-        let err = new Error(
-          errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${ex}`
-        );
-        err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
-        errorHandler(err, req, res, null);
-      }
+    try {
+      const conversionResult = proj4j._convertLatLong(
+        params.Source,
+        params.Destination,
+        coordinatesLatLonProxy.Latitude,
+        coordinatesLatLonProxy.Longitude
+      );
+      res.status(200).send(conversionResult);
+    } catch(ex) {
+      //proj4j lib could not convert so it's an unprocessable entity error code
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
     }
   }
 });
@@ -143,7 +141,8 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, re
       errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` Invalid request Body`
     );
     err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
-    errorHandler(err, req, res, null);
+    require("./middleware/errorHandler")(err, req, res, null);
+    return;
 
   } else {
     logger.LOG_INFO('add credit body: '+ params);
@@ -153,16 +152,17 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, re
         errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` Email: ${params.Email} not found`
       );
       err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
-      errorHandler(err, req, res, null);
-
+      require("./middleware/errorHandler")(err, req, res, null);
       return;
+
     } else if ( !Number.isInteger(params.CreditToAdd) || params.CreditToAdd <= 0){
 
       let err = new Error(
         errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` Invalid credit.`
       );
       err.StatusCode = enumHTTPStatusCodes.BadRequest;
-      errorHandler(err, req, res, null);
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
 
     } else {
       const CreditToAdd = params.CreditToAdd;
@@ -181,7 +181,8 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, re
           errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: ${ex}`
         );
         err.StatusCode = enumHTTPStatusCodes.BadRequest;
-        errorHandler(err, req, res, null);
+        require("./middleware/errorHandler")(err, req, res, null);
+        return;
       }
     }
   }

@@ -1,3 +1,5 @@
+import { SwalDialogService } from './../../services/dialog-service';
+import { ApiService } from './../../services/api.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormControl, FormGroup } from '@angular/forms';
 import { CoupleLatLonFormContract } from 'src/app/models/contracts';
@@ -9,7 +11,10 @@ import { CoupleLatLonFormContract } from 'src/app/models/contracts';
 })
 export class CoupleLatLonComponent implements OnInit {
 
-  constructor() { }
+  constructor(
+    private apiService: ApiService,
+    private dialogService: SwalDialogService
+    ) { }
 
   @Input() registry: string[];
 
@@ -38,8 +43,16 @@ export class CoupleLatLonComponent implements OnInit {
 
   Conversion() {
     const contract = this.GetCoupleLatitudeLongitudeFormContract();
-    console.log(contract)
-    //this.apiService.
+    console.log(contract);
+
+    this.apiService.convertLatLong(contract).subscribe((x) => {
+        if(x) {
+          console.log(x);
+        }
+      }, err => {
+        this.dialogService.showErrorDialog('Error', err.error)
+      }
+    );
   }
 
 }
