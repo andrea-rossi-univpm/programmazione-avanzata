@@ -1,0 +1,16 @@
+<div class="row">
+  <div class="col-6">
+    <app-epsg-type-ahead
+      [label]="'Source'"
+      [control]="form.controls['Source']"
+      [EPSGRegistry]="this.EPSGRegistry"
+    ></app-epsg-type-ahead>
+  </div>
+  <div class="col-6">
+    <app-epsg-type-ahead
+      [label]="'Destination'"
+      [control]="form.controls['Destination']"
+      [EPSGRegistry]="this.EPSGRegistry"
+    ></app-epsg-type-ahead>
+  </div>
+</div>

@@ -1,0 +1,12 @@
+  <label for="typeahead-focus">{{ label }}</label>
+  <input
+    [disabled]="this.EPSGRegistry === null || this.EPSGRegistry === undefined || this.EPSGRegistry.length === 0 "
+    id="typeahead-focus"
+    type="text"
+    class="form-control"
+    [formControl]="control"
+    [ngbTypeahead]="search"
+    (focus)="focus$.next($any($event).target.value)"
+    (click)="click$.next($any($event).target.value)"
+    #instance="ngbTypeahead"
+  />

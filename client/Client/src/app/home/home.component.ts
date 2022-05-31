@@ -35,7 +35,6 @@ export class HomeComponent implements OnInit {
   }
 
 
-
   CoupleLatLonForm = new FormGroup({
     Latitude: new FormControl(''),
     Longitude: new FormControl(''),
@@ -47,6 +46,8 @@ export class HomeComponent implements OnInit {
   private GetCoupleLatitudeLongitudeFormContract(): CoupleLatLonFormContract {
     const contract = new CoupleLatLonFormContract();
 
+    debugger
+
     contract.Latitude = this.CoupleLatLonForm.controls['Latitude']?.value;
     contract.Longitude = this.CoupleLatLonForm.controls['Longitude']?.value;
     contract.Source = this.CoupleLatLonForm.controls['Source']?.value;
@@ -56,31 +57,9 @@ export class HomeComponent implements OnInit {
   }
 
   LatLongConversion() {
+    const contract = this.GetCoupleLatitudeLongitudeFormContract();
+    console.log(contract)
     //this.apiService.
   }
-
-
-
-
-
-
-  //type ahead settings ///////////////////////////////////////////////////////
-
-
-  @ViewChild('instance', {static: true}) instance: NgbTypeahead;
-  focus$ = new Subject<string>();
-  click$ = new Subject<string>();
-
-  search: OperatorFunction<string, readonly string[]> = (text$: Observable<string>) => {
-    const debouncedText$ = text$.pipe(debounceTime(200), distinctUntilChanged());
-    const clicksWithClosedPopup$ = this.click$.pipe(filter(() => !this.instance.isPopupOpen()));
-    const inputFocus$ = this.focus$;
-
-    return merge(debouncedText$, inputFocus$, clicksWithClosedPopup$).pipe(
-      map(term => (term === '' ? this.registry
-        : this.registry.filter(v => v.toLowerCase().indexOf(term.toLowerCase()) > -1)).slice(0, 10))
-    );
-  }
-  /////////////////////////////////////////////////////////////////////////////
 
 }

@@ -11,13 +11,17 @@ import { NgbModule } from '@ng-bootstrap/ng-bootstrap';
 import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule } from '@angular/common/http';
 import { SwalDialogService } from './services/dialog-service';
+import { EpsgTypeAheadComponent } from './sub-component/epsg-type-ahead/epsg-type-ahead.component';
+import { SourceDestinationBoxComponent } from './sub-component/source-destination-box/source-destination-box.component';
 
 @NgModule({
   declarations: [
     AppComponent,
     HomeComponent,
     RedisManagementComponent,
-    NotFoundComponent
+    NotFoundComponent,
+    EpsgTypeAheadComponent,
+    SourceDestinationBoxComponent
   ],
   imports: [
     BrowserModule,
