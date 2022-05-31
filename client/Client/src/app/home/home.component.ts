@@ -25,13 +25,11 @@ export class HomeComponent implements OnInit {
   }
 
   loadRegistry() {
-    this.apiService.getEPSG().subscribe((x: string[]) => {
+    this.apiService.getEPSG().then((x: string[]) => {
       if(x) {
         this.registry = x;
         console.log(this.registry)
       }
-    }, err => {
-      Swal.fire('Error',err.error.error,'error');
-    });
+    }).catch( err => this.dialogService.showErrorDialog(err.error.error));
   }
 }

@@ -12,16 +12,16 @@ export class SwalDialogService {
   constructor(
   ) {}
 
-  showSuccessDialog(title: string, msg: string) {
-    this.showDialog(title, msg, 'success');
+  showSuccessDialog(msg: string) {
+    this.showDialog('Success', msg, 'success');
   }
 
-  showWarningDialog(title: string, msg: string) {
-    this.showDialog(title, msg, 'warning');
+  showWarningDialog(msg: string) {
+    this.showDialog('Warning', msg, 'warning');
   }
 
-  showErrorDialog(title: string, msg: string) {
-    this.showDialog(title, msg, 'error');
+  showErrorDialog(msg: string) {
+    this.showDialog('Error', msg, 'error');
   }
 
   showDialog(title: string, msg:string, icon: SweetAlertIcon) {

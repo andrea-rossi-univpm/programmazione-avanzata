@@ -21,14 +21,11 @@ export class RedisManagementComponent implements OnInit {
   }
 
   loadUsers() {
-    this.apiService.getUsers().subscribe((x: UsersModel[]) => {
+    this.apiService.getUsers().then((x: UsersModel[]) => {
         if(x) {
           this.users = x;
         }
-      }, err => {
-        Swal.fire('Error',err.error.error,'error');
-      }
-    );
+      }).catch( err => this.dialogService.showErrorDialog(err));
   }
 
   async addCredit(email: string) {
@@ -51,13 +48,12 @@ export class RedisManagementComponent implements OnInit {
               }, jwt).subscribe((x) => {
                   if(x) {
                     this.dialogService.showSuccessDialog(
-                      'Success',
                       `Added ${creditToAdd} credit${creditToAdd > 1 ? 's' : ''} to ${email}`
                     );
                     //then update UI for credits (when credits will be implemented in get method)
                   }
                 }, err => {
-                  this.dialogService.showErrorDialog('Error', err.error)
+                  this.dialogService.showErrorDialog(err.error)
                 }
               );
             } else {

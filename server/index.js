@@ -83,16 +83,8 @@ app.get('/getUsers', function (req, res) {
   res.send(users);
 });
 
-app.post('/convertLatLong', function (req, res) {
+app.post('/convertLatLong', require("./middleware/checkConversionRequest"), function (req, res) {
   const params =  req.body;
-  if(!params || Object.keys(params).length === 0) {
-    //why next does not work?
-    let err = new Error(
-      errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + ": Invalid request Body"
-    );
-    err.StatusCode = enumHTTPStatusCodes.Unauthorized;
-    errorHandler(err, req, res, null);
-  } else {
     let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
     //protecting against bad requests
     try {
@@ -125,7 +117,49 @@ app.post('/convertLatLong', function (req, res) {
       require("./middleware/errorHandler")(err, req, res, null);
       return;
     }
-  }
+});
+
+app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"), function (req, res) {
+  const params =  req.body;
+    let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
+    //protecting against bad requests
+    try {
+      //sub array of lat/lon validation, one by one
+      params.ArrayLatLon.forEach(x => {
+        coordinatesLatLonProxy.Latitude = x.Latitude;
+        coordinatesLatLonProxy.Longitude = x.Longitude;
+      })
+      
+    } catch(ex) {
+      //Proxy validator exception (err is already defined so I'll rewrite it)
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.BadRequest;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
+    }
+
+    try {
+      let response = new Array();
+      params.ArrayLatLon.forEach(x => {
+        response.push(proj4j._convertLatLong(
+          params.Source,
+          params.Destination,
+          x.Latitude,
+          x.Longitude
+        ));
+      });
+      res.status(200).send(conversionResult);
+    } catch(ex) {
+      //proj4j lib could not convert so it's an unprocessable entity error code
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
+    }
 });
 
 //using custom middleware only for this api to verify user role (role back-end side)

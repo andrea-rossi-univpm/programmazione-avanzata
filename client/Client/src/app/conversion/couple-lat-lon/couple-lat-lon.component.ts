@@ -45,14 +45,12 @@ export class CoupleLatLonComponent implements OnInit {
     const contract = this.GetCoupleLatitudeLongitudeFormContract();
     console.log(contract);
 
-    this.apiService.convertLatLong(contract).subscribe((x) => {
-        if(x) {
-          console.log(x);
-        }
-      }, err => {
-        this.dialogService.showErrorDialog('Error', err.error)
+    this.apiService.convertLatLong(contract).then((x) => {
+      if(x) {
+        this.dialogService.showSuccessDialog(JSON.stringify(x));
       }
-    );
+    }).catch(err => this.dialogService.showErrorDialog(err.error));
+
   }
 
 }

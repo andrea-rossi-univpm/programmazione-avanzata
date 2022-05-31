@@ -1,6 +1,8 @@
+import { ApiService } from './../../services/api.service';
 import { Component, Input, OnInit } from '@angular/core';
 import { FormArray, FormBuilder, FormControl, FormGroup } from '@angular/forms';
 import { ArrayLatLonContract } from 'src/app/models/contracts';
+import { SwalDialogService } from 'src/app/services/dialog-service';
 
 @Component({
   selector: 'app-array-lat-lon',
@@ -9,7 +11,11 @@ import { ArrayLatLonContract } from 'src/app/models/contracts';
 })
 export class ArrayLatLonComponent implements OnInit {
 
-  constructor(private fb: FormBuilder) { }
+  constructor(
+    private fb: FormBuilder,
+    private apiService: ApiService,
+    private dialogService: SwalDialogService
+    ) { }
 
   @Input() registry: string[];
 
@@ -59,6 +65,12 @@ export class ArrayLatLonComponent implements OnInit {
   Conversion() {
     const contract = this.GetArrayLatLonFormContract();
     console.log(contract);
+
+    this.apiService.convertArrayLatLong(contract).then((x) => {
+      if(x) {
+        console.log(x);
+      }
+    }).catch(err => this.dialogService.showErrorDialog(err.error));
   }
 
 }
