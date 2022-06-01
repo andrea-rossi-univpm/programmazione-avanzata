@@ -5,23 +5,48 @@ const logger = singletoneLogger.getInstance();
 
 require('dotenv').config();
 //REDIS handler
-const redis = require('redis');
+const redis = require('ioredis');
 const redisSocket = {
     host: process.env.REDIS_IP || '0.0.0.0',
     port: process.env.REDIS_PORT || 3001,
 };
+
 logger.LOG_INFO("Redis connection setting: " + JSON.stringify(redisSocket,'\t'));
 
 //how to catch redis service offline?
-//todo: IORedis
+//using IORedis package instead of 'redis'
 //connection refused
-const redisClient = /*await*/ redis.createClient(redisSocket);
+const redisClient = /*await*/ new redis(redisSocket, 
+    { 
+        enableReadyCheck: true,
+        showFriendlyErrorStack: true 
+    }
+);
+
+/* const sleep = ms => new Promise(res => setTimeout(res, ms));
+
+const numRetry = 10;
+let count = 0;
+try {
+    (async function(){
+        while(redisClient.status === 'connecting') {
+            if(count >= numRetry)
+                logger.LOG_FATAL(`Redis connection timeout`);
+            logger.LOG_WARNING(`Connecting attempt ${count}`);
+            count++;
+            await sleep(1000);
+        }
+    });
+} catch(ex) {
+    logger.LOG_FATAL(`Redis connecting exception: ${ex}`);
+}
+ */
 
 // Disable client's AUTH command.
 redisClient['auth'] = null;
 
 redisClient.on('connect', () => {
-    console.log('::> Redis Client Connected');
+    logger.LOG_INFO('::> Redis Client Connected');
 });
 
 //catching redis error: in that case stop execution of node server
