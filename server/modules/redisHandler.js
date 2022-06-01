@@ -46,7 +46,7 @@ try {
 redisClient['auth'] = null;
 
 redisClient.on('connect', () => {
-    logger.LOG_INFO('::> Redis Client Connected');
+    logger.LOG_INFO('Redis Client Connected');
 });
 
 //catching redis error: in that case stop execution of node server
@@ -108,18 +108,19 @@ module.exports = {
         const initialUserCredits = parseInt(process.env.DEFAULT_USER_CREDIT) || 5;
         //set("<key>", "<value>")
         users.forEach( user => {
-            redisClient.set(user, initialUserCredits, (err, reply) => {
+            redisClient.set(user.Email, initialUserCredits, (err, reply) => {
                 if(err) {
                     //to catch in parent bubble
-                    logger.LOG_FATAL(`Redis setting '${user}' error: ${err}`);
+                    logger.LOG_FATAL(`Redis SET '${user.Email}' error: ${err}`);
                 } 
-                logger.LOG_DEBUG(reply);
+                logger.LOG_DEBUG(`Redis stored '${user.Email}' with Credits: ${initialUserCredits}`);
             
-                redisClient.get(user, (err, reply) => {
+                redisClient.get(user.Email, (err, reply) => {
                     if(err) {
-                        logger.LOG_FATAL(`Redis getting '${user}' error: ${err}`);
+                        logger.LOG_FATAL(`Redis getting '${user.Email}' error: ${err}`);
                     } 
-                    logger.LOG_DEBUG(reply);
+                    logger.LOG_DEBUG(`Redis GET '${user.Email}' with Credits: ${initialUserCredits}`);
+
                 });
             });
         });
