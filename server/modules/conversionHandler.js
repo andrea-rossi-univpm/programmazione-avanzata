@@ -1,3 +1,4 @@
+'use strict'; 
 /*
 
  order 1:  lat-lng (or northing-easting) -> used by Leaflet

@@ -1,3 +1,4 @@
+'use strict'; 
 //JSON file could be loaded also using require function.
 //In this case I use readFile to avoid cached result. (BTW Require is synchronous)
 const enumHTTPStatusCodes = require("../models/httpsStatusCode");

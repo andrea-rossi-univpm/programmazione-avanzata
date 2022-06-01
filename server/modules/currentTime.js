@@ -1,3 +1,5 @@
+'use strict'; 
+
 module.exports = {
     _getCurrentTime: function() {
         const _date = new Date(Date.now());

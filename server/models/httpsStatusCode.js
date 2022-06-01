@@ -1,4 +1,5 @@
-//.split(/(?=[A-Z])/) -> Network Authentication Required
+'use strict'; 
+
 //most common 30x, 4xx,5xx errors
 module.exports = enumHTTPStatusCodes = {
     None: 0,

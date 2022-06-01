@@ -1,3 +1,5 @@
+'use strict'; 
+
 const CErrorFactory = require("../modules/error-factory");
 const errorFactory = new CErrorFactory();
 const enumHTTPStatusCodes = require("../models/httpsStatusCode");

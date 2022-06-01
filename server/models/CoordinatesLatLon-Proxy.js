@@ -1,3 +1,5 @@
+'use strict'; 
+
 //simple lat/long coordinates: Latitude: 43.6391249, Longitude: 13.3614249
 
 const singletoneLogger = require("../modules/logger-singleton");

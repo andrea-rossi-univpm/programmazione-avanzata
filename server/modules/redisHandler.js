@@ -1,3 +1,4 @@
+'use strict'; 
 //logger singletone
 const singletoneLogger = require("./logger-singleton");
 const logger = singletoneLogger.getInstance();

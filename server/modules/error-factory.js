@@ -1,4 +1,5 @@
 
+'use strict';
 var timeHelper = require("./currentTime");
 var enumHTTPStatusCodes = require("../models/httpsStatusCode");
 

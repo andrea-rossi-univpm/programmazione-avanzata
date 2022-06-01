@@ -1,3 +1,4 @@
+'use strict'; 
 //Loading epsg file
 //Behavior for loading file:
 //Discard line that starts with #
