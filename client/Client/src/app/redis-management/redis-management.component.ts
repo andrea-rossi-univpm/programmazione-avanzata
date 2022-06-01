@@ -53,7 +53,7 @@ export class RedisManagementComponent implements OnInit {
                     //then update UI for credits (when credits will be implemented in get method)
                   }
                 }, err => {
-                  this.dialogService.showErrorDialog(err.error)
+                  this.dialogService.showErrorDialog(err.error.error)
                 }
               );
             } else {

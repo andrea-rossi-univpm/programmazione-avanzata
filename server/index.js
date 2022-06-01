@@ -81,10 +81,14 @@ app.use(require("./middleware/errorHandler")); //handling errors on previous mid
 
 app.get('/getUsers', function (req, res) {
   try {
-    const usersWithCredits = users.map(x => {
+    users.forEach(x => {
       x['Credit'] = redisHandler._getCreditByEmail(x['Email']);
     })
-    res.send(usersWithCredits);
+    /* const usersWithCredits = users.map(x => {
+      x = x,
+      x['Credit'] = redisHandler._getCreditByEmail(x['Email']);
+    }) */
+    res.send(users);
   } catch(err) {
     logger.ERROR("Error retriving users with credit: " + err);
     res./*.status(206).*/send(users);
