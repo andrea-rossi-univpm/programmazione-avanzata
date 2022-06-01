@@ -80,20 +80,7 @@ app.use(require("./middleware/errorHandler")); //handling errors on previous mid
 //////////////////////////////////// REST API ///////////////////////////////////////////////////
 
 app.get('/getUsers', function (req, res) {
-  try {
-    users.forEach(x => {
-      x['Credit'] = redisHandler._getCreditByEmail(x['Email']);
-    })
-    /* const usersWithCredits = users.map(x => {
-      x = x,
-      x['Credit'] = redisHandler._getCreditByEmail(x['Email']);
-    }) */
-    res.send(users);
-  } catch(err) {
-    logger.ERROR("Error retriving users with credit: " + err);
-    res./*.status(206).*/send(users);
-  }
-  
+  res.send(users);
 });
 
 app.post('/convertLatLong', require("./middleware/checkConversionRequest"), function (req, res) {
@@ -176,42 +163,8 @@ app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"),
 });
 
 //using custom middleware only for this api to verify user role (role back-end side)
-app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, res) {
-  //check admin role
-  /* if(req.user.Role !== 'Administrator') {
-    return res.status(401).send({"error": 'User must be Administrator'});
-  } */
+app.post('/addCredit', require("./middleware/checkAdminRole"), require("./middleware/checkCreditRequest"),  function (req, res) {
   const params =  req.body;
-  if(!params || Object.keys(params).length === 0) {
-    
-    let err = new Error(
-      errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` Invalid request Body`
-    );
-    err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
-    require("./middleware/errorHandler")(err, req, res, null);
-    return;
-
-  } else {
-    logger.LOG_INFO('add credit body: '+ params);
-    if((users.find(x => x['Email'] === params.Email) === undefined)) {
-
-      let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` Email: ${params.Email} not found`
-      );
-      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
-      require("./middleware/errorHandler")(err, req, res, null);
-      return;
-
-    } else if ( !Number.isInteger(params.CreditToAdd) || params.CreditToAdd <= 0){
-
-      let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` Invalid credit.`
-      );
-      err.StatusCode = enumHTTPStatusCodes.BadRequest;
-      require("./middleware/errorHandler")(err, req, res, null);
-      return;
-
-    } else {
       const CreditToAdd = params.CreditToAdd;
       const Email = params.Email;
 
@@ -231,8 +184,6 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), function (req, re
         require("./middleware/errorHandler")(err, req, res, null);
         return;
       }
-    }
-  }
 });
 
 app.get('/getEPSG', function (req, res) {
