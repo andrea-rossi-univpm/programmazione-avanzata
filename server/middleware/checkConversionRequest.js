@@ -27,7 +27,7 @@ const checkConversionRequest = function(req, res, next){
       const result = redisHandler._PerformCall(req.body.Email);
       if(result) {
         logger.LOG_INFO(
-          `User ${Email} spent 1 credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`
+          `User ${Email} spent 1 credit`
         );
       }
     } catch(ex) {

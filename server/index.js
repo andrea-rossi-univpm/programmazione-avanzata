@@ -35,7 +35,7 @@ const users = require('./modules/usersLoader');
 
 //REDIS
 const redisHandler = require('./modules/redisHandler');
-//redisHandler._SetUsers(users); 
+redisHandler._SetUsers(users); 
 
 const enumHTTPStatusCodes = require("./models/httpsStatusCode");
 

@@ -1,5 +1,3 @@
-'use strict'; 
-
 module.exports = enumLogLevel = {
   TRC: 0,
   DBG: 1,
