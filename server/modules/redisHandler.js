@@ -19,28 +19,15 @@ logger.LOG_INFO("Redis connection setting: " + JSON.stringify(redisSocket,'\t'))
 const redisClient = /*await*/ new redis(redisSocket, 
     { 
         enableReadyCheck: true,
-        showFriendlyErrorStack: true 
-    }
+        showFriendlyErrorStack: true,
+        maxRetriesPerRequest: 10,
+        retryStrategy(times) {
+            const delay = Math.min(times * 50, 2000);
+            return delay;
+        } 
+    },
+   
 );
-
-/* const sleep = ms => new Promise(res => setTimeout(res, ms));
-
-const numRetry = 10;
-let count = 0;
-try {
-    (async function(){
-        while(redisClient.status === 'connecting') {
-            if(count >= numRetry)
-                logger.LOG_FATAL(`Redis connection timeout`);
-            logger.LOG_WARNING(`Connecting attempt ${count}`);
-            count++;
-            await sleep(1000);
-        }
-    });
-} catch(ex) {
-    logger.LOG_FATAL(`Redis connecting exception: ${ex}`);
-}
- */
 
 // Disable client's AUTH command.
 redisClient['auth'] = null;
@@ -51,7 +38,7 @@ redisClient.on('connect', () => {
 
 //catching redis error: in that case stop execution of node server
 redisClient.on('error', err => {
-  logger.LOG_FATAL('Redis client error: ' + err);
+  logger.LOG_ERROR('Redis client error: ' + err);
 });
 
 //REDIS Function used on data: 'set' update if exists - create if it doesn't. 
@@ -75,7 +62,6 @@ function setValue(key, value) {
         logger.LOG_INFO(`Set success: ${reply}`);
     });
 }
-
 
 /* The incr() function increments a key value by 1. 
 If you need to increment by a different amount, 
@@ -125,6 +111,11 @@ module.exports = {
             });
         });
         
-        logger.LOG_INFO("Redis setup with users.");
+        logger.LOG_INFO(`Finish redis setup with ${users.length} user${users.length > 1 ? 's' : ''}`);
+    },
+    _getCreditByEmail: function(email) {
+        const keyValue = getKeyValue(email);
+        if(keyValue) 
+            return keyValue['value']; 
     }
 }

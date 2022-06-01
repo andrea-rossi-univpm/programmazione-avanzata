@@ -80,7 +80,16 @@ app.use(require("./middleware/errorHandler")); //handling errors on previous mid
 //////////////////////////////////// REST API ///////////////////////////////////////////////////
 
 app.get('/getUsers', function (req, res) {
-  res.send(users);
+  try {
+    const usersWithCredits = users.map(x => {
+      x['Credit'] = redisHandler._getCreditByEmail(x['Email']);
+    })
+    res.send(usersWithCredits);
+  } catch(err) {
+    logger.ERROR("Error retriving users with credit: " + err);
+    res./*.status(206).*/send(users);
+  }
+  
 });
 
 app.post('/convertLatLong', require("./middleware/checkConversionRequest"), function (req, res) {
