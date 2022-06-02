@@ -30,14 +30,12 @@ const checkConversionRequest = async function(req, res, next){
       const Email = req.email;
       //checking account balance
       await redisHandler._PerformCall(Email);
-      logger.LOG_INFO(`User ${Email} spent 1 credit`);
     } catch(ex) {
       let err = new Error(
         errorFactory.getError(enumHTTPStatusCodes.Unauthorized).getMsg() + `: ${ex}`
       );
       err.StatusCode = enumHTTPStatusCodes.Unauthorized;
-      require("./errorHandler")(err, req, res, null);
-      return;
+      next(err);
     }
 
     //////////////////////////////////////////////////////////////////////

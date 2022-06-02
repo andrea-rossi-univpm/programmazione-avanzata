@@ -47,10 +47,7 @@ export class RedisManagementComponent implements OnInit {
                 Email: email
               }, jwt).subscribe((x) => {
                   if(x) {
-                    this.dialogService.showSuccessDialog(
-                      `Added ${creditToAdd} credit${creditToAdd > 1 ? 's' : ''} to ${email}`
-                    );
-                    //then update UI for credits (when credits will be implemented in get method)
+                    this.dialogService.showSuccessDialog(x.toString());
                   }
                 }, err => {
                   this.dialogService.showErrorDialog(err.error.error)

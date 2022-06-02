@@ -170,12 +170,8 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), require("./middle
 
       //call to redis
       try {
-        const result = redisHandler._AddCredits(Email, CreditToAdd);
-        if(result) {
-          logger.LOG_INFO(
-            `Added ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
-          res.sendStatus(200);
-        }
+        redisHandler._AddCredits(Email, CreditToAdd);
+        res.status(200).send(`Added ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
       } catch(ex) {
         let err = new Error(
           errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: ${ex}`

@@ -71,21 +71,31 @@ you can use incrby() function.
 Similarly, to decrement a key you can use the functions like decr() and decrby(). */
 
 module.exports = {
-	_AddCredits: async function(email, creditToAdd) {
-		redisClient.incrby(email, creditToAdd);
+	_AddCredits: function(email, creditToAdd) {
+        redisClient.incrby(email, creditToAdd, (err, reply) => {
+            if (err) {
+                logger.LOG_FATAL(`Redis error on incrementing '${email}' error: ${err}`);
+            }
+            logger.LOG_INFO(`Redis incremented credit of user '${email}'. Actual credit: ${reply}`);
+        });
 	},
-	_PerformCall: async function(email) {
-		await redisClient.get(email, async(err, reply) => {
+	_PerformCall: function(email) {
+		redisClient.get(email, (err, reply) => {
 			//LOG_FATAL will throw exception that are catched in the caller (checkConversionRequest)
 			if (err) {
 				logger.LOG_FATAL(`Redis getting '${email}' error: ${err}`);
 			}
 
-			if (reply['value'] <= 0) {
+			if (parseInt(reply) <= 0) {
 				logger.LOG_FATAL(`${email}' has insufficient balance`);
 			}
 
-			await redisClient.decr(email);
+			redisClient.decr(email, (err, reply) => {
+                if (err) {
+                    logger.LOG_FATAL(`Redis error on decrementing '${email}' error: ${err}`);
+                }
+                logger.LOG_INFO(`User '${email} spent 1 credit'. Actual credit: ${reply}`);
+            });
 		});
 	},
 	_SetUsers: function() {
