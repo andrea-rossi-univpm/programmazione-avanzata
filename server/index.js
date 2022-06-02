@@ -93,7 +93,7 @@ app.post('/convertLatLong', require("./middleware/checkConversionRequest"), func
     } catch(ex) {
       //Proxy validator exception (err is already defined so I'll rewrite it)
       let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${ex}`
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: ${ex}`
       );
       err.StatusCode = enumHTTPStatusCodes.BadRequest;
       require("./middleware/errorHandler")(err, req, res, null);
@@ -124,16 +124,19 @@ app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"),
     let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
     //protecting against bad requests
     try {
+      if(!params.ArrayLatLon || params.ArrayLatLon.length === 0) {
+        throw 'Empty array lat/lon';
+      }
       //sub array of lat/lon validation, one by one
       params.ArrayLatLon.forEach(x => {
-        coordinatesLatLonProxy.Latitude = x.Latitude;
-        coordinatesLatLonProxy.Longitude = x.Longitude;
+        coordinatesLatLonProxy.Latitude = x[0];
+        coordinatesLatLonProxy.Longitude = x[1];
       })
       
     } catch(ex) {
       //Proxy validator exception (err is already defined so I'll rewrite it)
       let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ` ${ex}`
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: ${ex}`
       );
       err.StatusCode = enumHTTPStatusCodes.BadRequest;
       require("./middleware/errorHandler")(err, req, res, null);
@@ -146,15 +149,15 @@ app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"),
         response.push(proj4j._convertLatLong(
           params.Source,
           params.Destination,
-          x.Latitude,
-          x.Longitude
+          x[0],
+          x[1]
         ));
       });
-      res.status(200).send(conversionResult);
+      res.status(200).send(response);
     } catch(ex) {
       //proj4j lib could not convert so it's an unprocessable entity error code
       let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${ex}`
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + `: ${ex}`
       );
       err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
       require("./middleware/errorHandler")(err, req, res, null);
