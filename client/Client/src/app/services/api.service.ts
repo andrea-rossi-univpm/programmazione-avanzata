@@ -4,7 +4,7 @@ import { AddCreditContract, UsersModel } from './../models/users';
 import { Injectable } from '@angular/core';
 import { environment } from 'src/environments/environment';
 import { Observable } from 'rxjs';
-import { ArrayLatLonContract, CoupleLatLonFormContract } from '../models/contracts';
+import { ArrayLatLonContract, CoupleLatLonFormContract, GeoJSONContract } from '../models/contracts';
 
 @Injectable()
 export class ApiService {
@@ -46,6 +46,10 @@ export class ApiService {
 
   convertArrayLatLong(contract: ArrayLatLonContract): Promise<number[][]> {
     return this.postMethod(`${this.baseUrl}/convertArrayLatLong`, contract);
+  }
+
+  convertGeoJSON(contract: GeoJSONContract): Promise<string> {
+    return this.postMethod(`${this.baseUrl}/convertGeoJSON`, contract);
   }
 
 

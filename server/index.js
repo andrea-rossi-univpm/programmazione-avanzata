@@ -121,29 +121,29 @@ app.post('/convertLatLong', require("./middleware/checkConversionRequest"), func
 
 app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"), function (req, res) {
   const params =  req.body;
-    let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
-    //protecting against bad requests
-    try {
-      if(!params.ArrayLatLon || params.ArrayLatLon.length === 0) {
-        throw 'Empty array lat/lon';
-      }
-      //sub array of lat/lon validation, one by one
-      params.ArrayLatLon.forEach(x => {
-        coordinatesLatLonProxy.Latitude = x[0];
-        coordinatesLatLonProxy.Longitude = x[1];
-      })
-      
-    } catch(ex) {
-      //Proxy validator exception (err is already defined so I'll rewrite it)
-      let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: ${ex}`
-      );
-      err.StatusCode = enumHTTPStatusCodes.BadRequest;
-      require("./middleware/errorHandler")(err, req, res, null);
-      return;
+  let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
+  //protecting against bad requests
+  try {
+    if(!params.ArrayLatLon || params.ArrayLatLon.length === 0) {
+      throw 'Empty array lat/lon';
     }
+    //sub array of lat/lon validation, one by one
+    params.ArrayLatLon.forEach(x => {
+      coordinatesLatLonProxy.Latitude = x[0];
+      coordinatesLatLonProxy.Longitude = x[1];
+    })
+    
+  } catch(ex) {
+    //Proxy validator exception (err is already defined so I'll rewrite it)
+    let err = new Error(
+      errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: ${ex}`
+    );
+    err.StatusCode = enumHTTPStatusCodes.BadRequest;
+    require("./middleware/errorHandler")(err, req, res, null);
+    return;
+  }
 
-    try {
+  try {
       let response = new Array();
       params.ArrayLatLon.forEach(x => {
         response.push(proj4j._convertLatLong(
@@ -154,7 +154,7 @@ app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"),
         ));
       });
       res.status(200).send(response);
-    } catch(ex) {
+  } catch(ex) {
       //proj4j lib could not convert so it's an unprocessable entity error code
       let err = new Error(
         errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + `: ${ex}`
@@ -162,7 +162,67 @@ app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"),
       err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
       require("./middleware/errorHandler")(err, req, res, null);
       return;
-    }
+  }
+});
+
+//geoJSON: coordinates is in the format [lng, lat]
+app.post('/convertGeoJSON', require("./middleware/checkConversionRequest"), function (req, res) {
+  const params =  req.body;
+  const geoJSON = params.GeoJSON;
+  const geoJSONValidator = require("geojson-validation");
+  let nestedCoordinatesGeoJSON;
+  //protecting against bad requests
+  try {
+    if(!geoJSON)
+      throw 'Empty GeoJSON';
+    if(geoJSON.indexOf("coordinates") === -1)
+      throw "No property 'coordinates' found on GeoJSON";
+    const parsedGeoJSON = JSON.parse(geoJSON);
+    if(!geoJSONValidator.valid(parsedGeoJSON))
+      throw 'Invalid GeoJSON';
+
+    nestedCoordinatesGeoJSON = findAllByKey(parsedGeoJSON, 'coordinates');
+
+    let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
+    //sub array of lat/lon validation, one by one'
+    nestedCoordinatesGeoJSON.forEach(x => {
+      x.forEach(y => {
+        coordinatesLatLonProxy.Latitude = y[0];
+        coordinatesLatLonProxy.Longitude = y[1];
+      })
+      
+    })
+    
+  } catch(ex) {
+    //Proxy validator exception (err is already defined so I'll rewrite it)
+    let err = new Error(
+      errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: ${ex}`
+    );
+    err.StatusCode = enumHTTPStatusCodes.BadRequest;
+    require("./middleware/errorHandler")(err, req, res, null);
+    return;
+  }
+
+  try {
+      let response = new Array();
+      nestedCoordinatesGeoJSON.forEach( (x, index) => {
+        response.push(proj4j._convertLatLong(
+          params.Source,
+          params.Destination,
+          x[index][0],
+          x[index][1]
+        ));
+      });
+      res.status(200).send(response);
+  } catch(ex) {
+      //proj4j lib could not convert so it's an unprocessable entity error code
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + `: ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
+  }
 });
 
 //using custom middleware only for this api to verify user role (role back-end side)
@@ -193,6 +253,17 @@ app.get('/getEPSG', function (req, res) {
 
 //forcing node server to listen using IPv4
 app.listen(nodePort, nodeIP, () => {
-  logger.LOG_INFO(`Node ${process.version} Running on http://${nodeIP}:${nodePort}`);
+  const os = require('os');
+  logger.LOG_INFO(`Node ${process.version} Running on http://${nodeIP}:${nodePort} on ${os.type()}: ${os.version()}`);
 });
 
+
+function findAllByKey(obj, keyToFind) {
+  return Object.entries(obj)
+    .reduce((acc, [key, value]) => (key === keyToFind)
+      ? acc.concat(value)
+      : (typeof value === 'object')
+      ? acc.concat(findAllByKey(value, keyToFind))
+      : acc
+    , [])
+}
