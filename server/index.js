@@ -35,7 +35,7 @@ const users = require('./modules/usersLoader');
 
 //REDIS
 const redisHandler = require('./modules/redisHandler');
-redisHandler._SetUsers(users); 
+redisHandler._PassUsersList(users);
 
 const enumHTTPStatusCodes = require("./models/httpsStatusCode");
 
@@ -194,7 +194,7 @@ app.get('/getEPSG', function (req, res) {
 
 //forcing node server to listen using IPv4
 app.listen(nodePort, nodeIP, () => {
-  logger.LOG_INFO(`Node Running on http://${nodeIP}:${nodePort}`);
+  logger.LOG_INFO(`Node ${process.version} Running on http://${nodeIP}:${nodePort}`);
 });
 
 
