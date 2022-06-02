@@ -9,7 +9,7 @@ let validator = {
   set(obj, prop, value) {
     switch(prop) {
       case 'Latitude':
-        if (value === null || value === undefined) {
+        if (value === null || value === undefined || value === '') {
           logger.LOG_FATAL('Latitue is undefined');
           return false;
         } else if(isNaN(value)) {
@@ -21,7 +21,7 @@ let validator = {
         obj[prop] = value;
         break;
       case 'Longitude':
-        if (value === null || value === undefined) {
+        if (value === null || value === undefined || value === '') {
           logger.LOG_FATAL('Longitude is undefined');
           return false;
         }

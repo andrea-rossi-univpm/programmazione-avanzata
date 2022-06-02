@@ -41,6 +41,7 @@ const checkConversionRequest = async function(req, res, next){
 
     //////////////////////////////////////////////////////////////////////
 
+    const epsgRegistryMapped = req.app.locals.epsgRegistry.map(x => x[0]);
 
     if(!params.Source) {
       let err = new Error(
@@ -51,14 +52,33 @@ const checkConversionRequest = async function(req, res, next){
       return;
     }
 
+    if(epsgRegistryMapped && epsgRegistryMapped.indexOf(params.Source.split(':')[1]) === -1) {
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: Unhandled system source ${params.Source}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.BadRequest;
+      require("./errorHandler")(err, req, res, null);
+      return;
+    }
+
     if(!params.Destination) {
       let err = new Error(
-        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ": Undefined system Destination"      );
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ": Undefined system Destination");
       err.StatusCode = enumHTTPStatusCodes.Unauthorized;
       require("./errorHandler")(err, req, res, null);
       return;
     }   
+
+    if(epsgRegistryMapped && epsgRegistryMapped.indexOf(params.Destination.split(':')[1]) === -1) {
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + `: Unhandled system destination ${params.Destination}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.BadRequest;
+      require("./errorHandler")(err, req, res, null);
+      return;
+    }
   }
+
 
   //not wrapped by else since here are used return after error handling
   next();

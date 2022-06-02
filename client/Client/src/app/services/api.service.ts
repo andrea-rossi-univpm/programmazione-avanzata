@@ -35,7 +35,7 @@ export class ApiService {
         headers: {
           Authorization: `Bearer ${jwt}`
         },
-        responseType: 'text' //if not specified could trap in err a 200 response
+        responseType: 'json' //if not specified could trap in err a 200 response
       }
     );
   }

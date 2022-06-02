@@ -61,7 +61,11 @@ const req = require("express/lib/request");
 const registry = require('./modules/EPSG-RegistryLoader');
 const app = express();
 //declaring a global variable 
-app.locals.users = users; //
+
+//setting global variable: can be retrievied using req.app.locals
+app.locals.users = users; 
+app.locals.epsgRegistry = epsgRegistry; 
+
 app.use(express.json()); // for parsing request body as JSON
 
 
@@ -107,7 +111,7 @@ app.post('/convertLatLong', require("./middleware/checkConversionRequest"), func
         coordinatesLatLonProxy.Latitude,
         coordinatesLatLonProxy.Longitude
       );
-      res.status(200).send(conversionResult);
+      res.status(200).json(conversionResult);
     } catch(ex) {
       //proj4j lib could not convert so it's an unprocessable entity error code
       let err = new Error(
@@ -153,7 +157,7 @@ app.post('/convertArrayLatLong', require("./middleware/checkConversionRequest"),
           x[1]
         ));
       });
-      res.status(200).send(response);
+      res.status(200).json(response);
   } catch(ex) {
       //proj4j lib could not convert so it's an unprocessable entity error code
       let err = new Error(
@@ -183,7 +187,8 @@ app.post('/convertGeoJSON', require("./middleware/checkConversionRequest"), func
     if(parsedGeoJSON.type !== 'FeatureCollection')
       throw 'Only FeatureCollection are managed. To convert simple point use lat/long convereter.';
 
-    nestedCoordinatesGeoJSON = findAllByKey(parsedGeoJSON, 'coordinates');
+    const objectHelper = require("./modules/objectHelper");
+    nestedCoordinatesGeoJSON =  objectHelper._findObjValuesByKey(parsedGeoJSON);
 
     let coordinatesLatLonProxy = require("./models/CoordinatesLatLon-Proxy");
     //sub array of lat/lon validation, one by one'
@@ -217,7 +222,7 @@ app.post('/convertGeoJSON', require("./middleware/checkConversionRequest"), func
           ));
         })
       });
-      res.status(200).send(response);
+      res.status(200).json(response);
   } catch(ex) {
       //proj4j lib could not convert so it's an unprocessable entity error code
       let err = new Error(
@@ -238,7 +243,7 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), require("./middle
       //call to redis
       try {
         redisHandler._AddCredits(Email, CreditToAdd);
-        res.status(200).send(`Added ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
+        res.status(200).json(`Added ${CreditToAdd} credit${CreditToAdd > 1 ? 's' : ''} to ${Email}`);
       } catch(ex) {
         let err = new Error(
           errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg() + `: ${ex}`
@@ -260,14 +265,3 @@ app.listen(nodePort, nodeIP, () => {
   const os = require('os');
   logger.LOG_INFO(`Node ${process.version} Running on http://${nodeIP}:${nodePort} on ${os.type()}: ${os.version()}`);
 });
-
-
-function findAllByKey(obj, keyToFind) {
-  return Object.entries(obj)
-    .reduce((acc, [key, value]) => (key === keyToFind)
-      ? acc.concat(value)
-      : (typeof value === 'object' && value)
-      ? acc.concat(findAllByKey(value, keyToFind))
-      : acc
-    , [])
-}
