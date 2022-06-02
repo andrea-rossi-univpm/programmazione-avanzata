@@ -38,8 +38,6 @@ const checkCreditRequest = function(req, res, next){
     next();
   }
 
-  
-
-  };
+};
 
 module.exports = checkCreditRequest;

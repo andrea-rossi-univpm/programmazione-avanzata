@@ -78,13 +78,5 @@ module.exports = {
         });
         
         logger.LOG_INFO(`Finish redis setup with ${users.length} user${users.length > 1 ? 's' : ''}`);
-    },
-    _getCreditByEmail: function(email) {
-        redisClient.get(user.Email, (err, reply) => {
-            if(err) {
-                logger.LOG_FATAL(`Redis getting '${user.Email}' error: ${err}`);
-            } 
-            return reply;
-        });
     }
 }

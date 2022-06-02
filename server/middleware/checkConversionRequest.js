@@ -5,7 +5,6 @@ const errorFactory = new CErrorFactory();
 const enumHTTPStatusCodes = require("../models/httpsStatusCode");
 const redisHandler = require("../modules/redisHandler");
 
-
 const checkConversionRequest = function(req, res, next){
 
   const params =  req.body;
@@ -60,8 +59,9 @@ const checkConversionRequest = function(req, res, next){
     }   
   }
 
+  //not wrapped by else since here are used return after error handling
   next();
 
-  };
+};
 
 module.exports = checkConversionRequest;
