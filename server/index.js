@@ -180,6 +180,8 @@ app.post('/convertGeoJSON', require("./middleware/checkConversionRequest"), func
     const parsedGeoJSON = JSON.parse(geoJSON);
     if(!geoJSONValidator.valid(parsedGeoJSON))
       throw 'Invalid GeoJSON';
+    if(parsedGeoJSON.type !== 'FeatureCollection')
+      throw 'Only FeatureCollection are managed. To convert simple point use lat/long convereter.';
 
     nestedCoordinatesGeoJSON = findAllByKey(parsedGeoJSON, 'coordinates');
 
@@ -205,13 +207,15 @@ app.post('/convertGeoJSON', require("./middleware/checkConversionRequest"), func
 
   try {
       let response = new Array();
-      nestedCoordinatesGeoJSON.forEach( (x, index) => {
-        response.push(proj4j._convertLatLong(
-          params.Source,
-          params.Destination,
-          x[index][0],
-          x[index][1]
-        ));
+      nestedCoordinatesGeoJSON.forEach(x => {
+        x.forEach(y => {
+          response.push(proj4j._convertLatLong(
+            params.Source,
+            params.Destination,
+            y[0],
+            y[1]
+          ));
+        })
       });
       res.status(200).send(response);
   } catch(ex) {
@@ -262,7 +266,7 @@ function findAllByKey(obj, keyToFind) {
   return Object.entries(obj)
     .reduce((acc, [key, value]) => (key === keyToFind)
       ? acc.concat(value)
-      : (typeof value === 'object')
+      : (typeof value === 'object' && value)
       ? acc.concat(findAllByKey(value, keyToFind))
       : acc
     , [])
