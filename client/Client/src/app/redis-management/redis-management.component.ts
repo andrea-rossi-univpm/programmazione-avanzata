@@ -50,6 +50,7 @@ export class RedisManagementComponent implements OnInit {
                     this.dialogService.showSuccessDialog(x.toString());
                   }
                 }, err => {
+                  debugger
                   this.dialogService.showErrorDialog(err.error.error)
                 }
               );

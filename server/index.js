@@ -193,5 +193,3 @@ app.listen(nodePort, nodeIP, () => {
   logger.LOG_INFO(`Node ${process.version} Running on http://${nodeIP}:${nodePort}`);
 });
 
-
-//for /l %x in (1, 1, 1000) do curl -v localhost:3000/about

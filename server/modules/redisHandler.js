@@ -34,14 +34,7 @@ const redisClient = new redis(redisSocket, {
 redisClient['auth'] = null;
 
 redisClient.on('connect', () => {
-	logger.LOG_INFO(`Redis Client Connected ${retry > 0 ? `
-		After $ {
-			retry
-		}
-		attempt$ {
-			retry > 1 ? 's' : ''
-		}
-		` : '' }`);
+	logger.LOG_INFO(`Redis Client Connected ${retry > 0 ? `After ${retry} attempt${retry > 1 ? 's' : ''}` : '' }`);
 	//resetting counter
 	retry = 0;
 	//Loading list to redis only If redis is connected, otherwise app will crash on Setting value

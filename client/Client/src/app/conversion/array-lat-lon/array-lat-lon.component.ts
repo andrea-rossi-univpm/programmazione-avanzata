@@ -68,9 +68,10 @@ export class ArrayLatLonComponent implements OnInit {
 
     this.apiService.convertArrayLatLong(contract).then((x) => {
       if(x) {
-        console.log(x);
+        this.dialogService.showSuccessDialog(JSON.stringify(x));
       }
-    }).catch(err => this.dialogService.showErrorDialog(err.error));
+    }).catch(err => this.dialogService.showErrorDialog(err.error.error));
+
   }
 
 }

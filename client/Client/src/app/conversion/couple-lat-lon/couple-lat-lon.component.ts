@@ -53,4 +53,12 @@ export class CoupleLatLonComponent implements OnInit {
 
   }
 
+  testItem() {
+    //proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] )
+    this.CoupleLatLonForm.controls['Latitude'].setValue(43);
+    this.CoupleLatLonForm.controls['Longitude'].setValue(12);
+    this.CoupleLatLonForm.controls['Source'].setValue('EPSG:4326');
+    this.CoupleLatLonForm.controls['Destination'].setValue('EPSG:32633');
+  }
+
 }
