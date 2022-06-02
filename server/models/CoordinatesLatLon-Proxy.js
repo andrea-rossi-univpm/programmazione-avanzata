@@ -5,7 +5,6 @@
 const singletoneLogger = require("../modules/logger-singleton");
 const logger = singletoneLogger.getInstance();
 
-
 let validator = {
   set(obj, prop, value) {
     switch(prop) {
@@ -45,4 +44,4 @@ let validator = {
 
 //If there is an error using LOG_FATAL will raise an exception that will be caught in the caller function
 
-module.exports = LatLongCoordinates  = new Proxy({}, validator);
+module.exports = new Proxy({}, validator);

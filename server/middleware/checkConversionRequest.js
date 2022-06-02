@@ -1,11 +1,15 @@
 'use strict'; 
 
+//logger singletone
+const singletoneLogger = require("../modules/logger-singleton");
+const logger = singletoneLogger.getInstance();
+
 const CErrorFactory = require("../modules/error-factory");
 const errorFactory = new CErrorFactory();
 const enumHTTPStatusCodes = require("../models/httpsStatusCode");
 const redisHandler = require("../modules/redisHandler");
 
-const checkConversionRequest = function(req, res, next){
+const checkConversionRequest = async function(req, res, next){
 
   const params =  req.body;
   if(!params || Object.keys(params).length === 0) {
@@ -23,18 +27,16 @@ const checkConversionRequest = function(req, res, next){
     // this to prevent Dos attacks consuming power on fake validation
   
     try {
-      const result = redisHandler._PerformCall(req.body.Email);
-      if(result) {
-        logger.LOG_INFO(
-          `User ${Email} spent 1 credit`
-        );
-      }
+      const Email = req.email;
+      //checking account balance
+      await redisHandler._PerformCall(Email);
+      logger.LOG_INFO(`User ${Email} spent 1 credit`);
     } catch(ex) {
       let err = new Error(
         errorFactory.getError(enumHTTPStatusCodes.Unauthorized).getMsg() + `: ${ex}`
       );
       err.StatusCode = enumHTTPStatusCodes.Unauthorized;
-      require("./middleware/errorHandler")(err, req, res, null);
+      require("./errorHandler")(err, req, res, null);
       return;
     }
 

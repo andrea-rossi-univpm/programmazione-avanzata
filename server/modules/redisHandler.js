@@ -1,4 +1,5 @@
 'use strict'; 
+
 //logger singletone
 const singletoneLogger = require("./logger-singleton");
 const logger = singletoneLogger.getInstance();
@@ -47,13 +48,18 @@ module.exports = {
     _AddCredits: async function(email, creditToAdd) {
         redisClient.incrby(email, creditToAdd);
     },
-    _PerformCall: function(email) {
-        redisClient.get(email, (err, reply) => {
+    _PerformCall: async function(email) {
+        await redisClient.get(email, async (err, reply) => {
+            //LOG_FATAL will throw exception that are catched in the caller (checkConversionRequest)
             if(err) {
-                logger.LOG_ERROR(`Redis getting '${user.Email}' error: ${err}`);
-            } 
+                logger.LOG_FATAL(`Redis getting '${email}' error: ${err}`);
+            }
+            
+            if(reply['value'] <= 0) {
+                logger.LOG_FATAL(`${email}' has insufficient balance`);
+            }
 
-            redisClient.decr(email);
+            await redisClient.decr(email);
         });
     },
     _SetUsers: function(users) {

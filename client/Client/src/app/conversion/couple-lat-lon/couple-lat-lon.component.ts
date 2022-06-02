@@ -49,7 +49,7 @@ export class CoupleLatLonComponent implements OnInit {
       if(x) {
         this.dialogService.showSuccessDialog(JSON.stringify(x));
       }
-    }).catch(err => this.dialogService.showErrorDialog(err.error));
+    }).catch(err => this.dialogService.showErrorDialog(err.error.error));
 
   }
 

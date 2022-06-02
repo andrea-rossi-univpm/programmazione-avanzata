@@ -77,8 +77,8 @@ module.exports = {
       //proj4jsLIB('EPSG:4326','EPSG:32633').forward( [12, 43] ); 
       return proj4jsLIB(source, destination).forward( 
          [
-            Longitude, 
-            Latitude
+            Latitude,
+            Longitude 
          ] 
       ); 
    },
