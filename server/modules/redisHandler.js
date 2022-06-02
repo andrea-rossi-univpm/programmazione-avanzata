@@ -79,24 +79,15 @@ module.exports = {
             logger.LOG_INFO(`Redis incremented credit of user '${email}'. Actual credit: ${reply}`);
         });
 	},
-	_PerformCall: function(email) {
-		redisClient.get(email, (err, reply) => {
-			//LOG_FATAL will throw exception that are catched in the caller (checkConversionRequest)
-			if (err) {
-				logger.LOG_FATAL(`Redis getting '${email}' error: ${err}`);
-			}
+	_PerformCall: async function(email) {
+        let credit = await redisClient.get(email);
+		
+		if (parseInt(credit) <= 0) 
+			logger.LOG_FATAL(`${email}' has insufficient balance`);
+		
 
-			if (parseInt(reply) <= 0) {
-				logger.LOG_FATAL(`${email}' has insufficient balance`);
-			}
-
-			redisClient.decr(email, (err, reply) => {
-                if (err) {
-                    logger.LOG_FATAL(`Redis error on decrementing '${email}' error: ${err}`);
-                }
-                logger.LOG_INFO(`User '${email} spent 1 credit'. Actual credit: ${reply}`);
-            });
-		});
+        let newCredit = await redisClient.decr(email);
+        logger.LOG_INFO(`User '${email} spent 1 credit'. Actual credit: ${newCredit}`);
 	},
 	_SetUsers: function() {
 		const initialUserCredits = parseInt(process.env.DEFAULT_USER_CREDIT) || 5;

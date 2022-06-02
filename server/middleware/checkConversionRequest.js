@@ -35,7 +35,8 @@ const checkConversionRequest = async function(req, res, next){
         errorFactory.getError(enumHTTPStatusCodes.Unauthorized).getMsg() + `: ${ex}`
       );
       err.StatusCode = enumHTTPStatusCodes.Unauthorized;
-      next(err);
+      require("./errorHandler")(err, req, res, null);
+      return;
     }
 
     //////////////////////////////////////////////////////////////////////
