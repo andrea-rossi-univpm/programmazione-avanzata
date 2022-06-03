@@ -71,10 +71,12 @@ class CLogSingleton {
     }
 
     LOG_TRACE(msg) {
+      console.log(msg);
       this.writeMsg(loggerLevel.TRC, msg);
     }
 
     LOG_DEBUG(msg) {
+      console.log(msg);
       this.writeMsg(loggerLevel.DBG, msg);
     }
 
