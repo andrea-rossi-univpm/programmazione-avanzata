@@ -13,7 +13,7 @@ const errorFactory = new CErrorFactory();
 //console.log(errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg());
 
 class CLogSingleton {
-    loggerFleName;
+    loggerFileName;
 
     //declaring function above, otherwise 'formatMsg is not defined'
     getLoggerFileName() {
@@ -30,12 +30,12 @@ class CLogSingleton {
         return;
       }
 
-      if(!this.loggerFleName) {
+      if(!this.loggerFileName) {
         console.error("logger file name has not been set");
         return;
       }
 
-      fs.appendFileSync(this.loggerFleName, msg + '\r\n', function (err) {
+      fs.appendFileSync(this.loggerFileName, msg + '\r\n', function (err) {
         if (err) {
           errorFactory.getError(enumHTTPStatusCodes.InternalServerError).getMsg();
           throw err;
@@ -79,7 +79,7 @@ class CLogSingleton {
     }
 
     constructor() {
-      this.loggerFleName = this.getLoggerFileName(); 
+      this.loggerFileName = this.getLoggerFileName(); 
 
         //create directory for Logs if does not exists
         if (!fs.existsSync(baseDirLogName)) {
