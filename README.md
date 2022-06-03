@@ -40,6 +40,43 @@ Javascript style enumeration for the most common 30x, 4xx,5xx Http status code.
 Enumeration like previous, rappresenting different levels of log.
 
 ## Modules
-### Logger Singleton
+### Current time
+An helper module that provide functions about getting current time: <br>
+1. `GetCurrentTime`: that return a date formatted as follow: DD/MM/YYYY HH:mm:SS:mss
+2. `GetCurrentTimeLinuxEpoch`: that return date in linux epoch, so the number of seconds since January 1, 1970 at 00:00 Greenwich Mean Time.
+### Error Factory
+This module expose a class based on `Factory design pattern` that allows to handle different http status code to be created in a flexible and reusable way, using a generic interface. (Since in javascript interfaces does not exists, this is implemented using a class with extends keywords)
+
+### Logger Singletone
+
 As the name suggest, this module implement a logger class using a `Singletone pattern`. <br>
 This pattern ensures that there is only one instance of the logger class. To achieve this, the class has a static function called `getInstance` that create a new instance if there its the first time that its called, otherwise will return the previous created instance.
+<br>When its created the first and only instance, obviously will be called the constructor of the class and the logger will be initialized as below:<br>
+ 1. Name of the log are setted concatenating a prefix string (Node_) and current time in linux epoch.
+ 2. Requiring `fs` will be created if not exist in the parent folder of working dir a folder called 'Logs' (that is setted as parameter).
+ 3. The logger is ready 
+<br> <br>
+The logger class expose these methods:
+* LOG_TRADE(...)
+* LOG_DEBUG(...)
+* LOG_INFO(...) -> wrap a console.log
+* LOG_WARNING(...) -> wrap a console.warning
+* LOG_ERROR(...) -> wrap a console.error
+* LOG_FATAL(...) -> throw an exception stopping the program
+That incapsulating the log process (act as wrapper), where the message is written using `appendFileSync` function.
+<br>
+The message appended at the end of file its format with:
+    * Level of log
+    * Current time stamp with milliseconds
+    * Message
+
+In the project the logger is injected almost in all modules and the message are formatted using the factory design pattern described below.
+
+### Users Loader
+This module takes care about loading the users from assets file. Use simply the following instrunction:
+```` javascript
+JSON.parse(fs.readFileSync(usersFilePath, 'utf-8'));
+````
+Where after loading with `readFileSync` with UTF-8 encoding will try to parse the JSON. If everything does not throw up any exception after that will be check if records has a duplicate Email value. This is important becouse redis will use this data and can't permit duplicate primary key.
+The duplicate check is being made by double sort (using quick sort) where the second sort in the comparing function compare previous with current element.
+After that users loaded are exported using `module.exports`.
