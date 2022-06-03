@@ -171,3 +171,85 @@ Here are validated:
 6. Same checks for Destination (point 4 and 5)
 
 If one validation will not pass the erro handler is called, otherwise the execution continue with `next()`
+
+## Index.js
+Index.js is the current entry point of the application.
+Through the use of `require()` all modules/middleware introduced before can be used. <br>
+At the beginning are loaded the environment variable configuration inside `.env` file, after that following modules are used:
+1. Logger: using its `getInstance()`
+2. Users to load with its module. The users are stored in a global variable using node with the following syntax to grant an easier access to external modules without passing it as parameter (works only if req is defined):
+    ```` javascript
+    app.locals.users = users; 
+    ```` 
+3. Redis handler that start the connection and passing user list with `PassUsersList()` function
+4. ErrorFactory class for message easy construction
+5. EPSG registry to load with the `EPSG-RegistryLoader` module and setting it to the proj4j lib with `_setEPSGRegistry` function
+6. `Express`, web framework for building post/get/put request methods structure.
+7. `Cors`, `express/lib/request` and `express.json()`: to allow angular client to talk with back-end.
+8. through `app.use()` express can define middleware to use on each request. (There is a flag to exclude/include authorization middleware, default is true):
+    * logRoute
+    * checkHeader
+    * checkToken
+    * verifyAndAuthenticate
+    * errorHandler
+    
+### Rest API
+#### getUsers [GET]
+Retrieve all users loaded from assets file, using `res.send()` function.
+#### convertLatLong [POST]
+This endpoint besides the global middleware implement also `checkConversionRequest` middlware.
+Using `CoordinatesLatLon-Proxy` can validate inputs and then using `proj4j._convertLatLong(...)` can perform the conversion that is also wrapped into a try/catch statement to prevent library failures.<br>
+The response is send to the front-end as JSON as follow:
+```` javascript
+    try {
+      const conversionResult = proj4j._convertLatLong(
+        params.Source,
+        params.Destination,
+        coordinatesLatLonProxy.Latitude,
+        coordinatesLatLonProxy.Longitude
+      );
+      res.status(200).json(conversionResult);
+    } catch(ex) {
+      //proj4j lib could not convert so it's an unprocessable entity error code
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + ` ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
+    }
+```` 
+
+#### convertArrayLatLong [POST]
+Similar to the previous, also this implement the custom middleware validator. Use the same approach inside a foreach loop (also wrapped in a try/catch) as follow
+```` javascript
+    let response = new Array();
+    params.ArrayLatLon.forEach(x => {
+      response.push(proj4_convertLatLong(
+        params.Source,
+        params.Destination,
+        x[0],
+        x[1]
+      ));
+    });
+    res.status(200).json(response);
+````
+#### convertGeoJSON [POST]
+This method use same principle of previous, by the way since it to handle a geoJSON format its used `geojson-validation` package for validate the input beyond null/undefined/'' value or missing `coordinates` key on it. <br>
+This method assume that the type of the geoJSON is `FeatureCollection`.
+Using `_findObjValuesByKey` can retrieve nested coordinates value and then convert them using the wrap of proj4js inside of a forEach loop.
+
+#### addCredit [POST]
+This method allows to increment credit of an email set up on redis. It's implemented the custom middleware `checkAdminRole` described before and it's important to point up that this should be done only using a POST metod becouse GET method is supposed to not modify any value.
+
+#### getEPSG [GET]
+Method for retrving EPSG (only key) as EPSG:xxxx for building type-ahead in front-end side.
+
+At the end of definition of methods node server startup using the following syntax:
+```` javascript
+    app.listen(nodePort, nodeIP, () => {
+        const os = require('os');
+        logger.LOG_INFO(
+            `Node ${process.version} Running on http://${nodeIP}:${nodePort} on ${os.type()}: ${os.version()}`);
+    });
+````

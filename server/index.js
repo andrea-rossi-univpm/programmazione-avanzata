@@ -58,16 +58,13 @@ const express = require('express');
 //enabling CORS for every domain wich is not recomended for security reasons
 const cors = require('cors'); 
 const req = require("express/lib/request");
-const registry = require('./modules/EPSG-RegistryLoader');
 const app = express();
-//declaring a global variable 
 
 //setting global variable: can be retrievied using req.app.locals
 app.locals.users = users; 
 app.locals.epsgRegistry = epsgRegistry; 
 
 app.use(express.json()); // for parsing request body as JSON
-
 
   
 //middleware called on each route
@@ -255,7 +252,7 @@ app.post('/addCredit', require("./middleware/checkAdminRole"), require("./middle
 });
 
 app.get('/getEPSG', function (req, res) {
-  res.send(registry.map(x => 'EPSG:' + x[0]));
+  res.send(epsgRegistry.map(x => 'EPSG:' + x[0]));
 });
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
