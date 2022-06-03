@@ -80,3 +80,25 @@ JSON.parse(fs.readFileSync(usersFilePath, 'utf-8'));
 Where after loading with `readFileSync` with UTF-8 encoding will try to parse the JSON. If everything does not throw up any exception after that will be check if records has a duplicate Email value. This is important becouse redis will use this data and can't permit duplicate primary key.
 The duplicate check is being made by double sort (using quick sort) where the second sort in the comparing function compare previous with current element.
 After that users loaded are exported using `module.exports`.
+
+### EPSG Registry Loader
+This module handle EPSG, the assets file about system definition. Use the external package `n-readlines` where each line is readed and elaborated, discarding comments line that starts with `#`.
+To elaborate a line (converted in ascii), its used a clever approach, a double split, a map and a trim. This will give a result of key/value as system/definition.
+
+### Redis Handler
+This module allows to manage the connection between the application and redis and to manage set/get request. All communication is made using `io-redis` package. <br>
+On connection error will be displayed the `ECONNREFUSED` error and after 20 attempt of reconnection (Reconnection is handled internally by io-redis) through a LOG_FATAL the process will stop (since redis is required). <br>
+On connection succesfully, will be setted on redis the users loaded with the users loade module described before. After that will be set a flag that avoid to reload (so reset credits) users if connection drop and will be restored.
+Are exported outside these functions:
+1. `AddCredits`: Handle the increment of credit for an user. As input has the email to increment the credit and the credit to actually increment. Uses `incrby()` function.
+2. `PerformCall`: async/await function that blocks the execution of program as soon it finish the statements. Its important to check the email credit before to skip to any other function (since everything is asynchronous in Node). If user has no credit, will be returned an Unauthorized (401) response. Otherwise current credit will be decrement by one, using this time the function `decr()` and the execution of the program will continue.
+3. `PassUsersList`: Set in the current file a variable of users loaded by Users Loader in the index file. This var will be used by other functions in this module.
+4. `SetUsers`: Set the users loaded previously to redis. The initial credit are defined in the .env file as DEFAULT_USER_CREDIT variable and if not are defined 5 as default. The value/key are registred to redis using a double check function of set/get. <br> This function is called on 'connect' event of redis but only one time, using a flag.
+
+### Object Helper
+Utils module for operating with objects. Might be enriched with more auxiliary functions in the future. For now the only function exported is for extracting multiple `coordinates` key on geoJSON of type `FeatureCollection`. This is done using functional programming with redux, recursion, concatenation of arrays and ObjectEntries function to iterate over key/value pair of an object passed in input.
+
+### Conversion Handler
+This module use directly proj4js library including it using `require("proj4")`. <br> Export outside different functions such as:
+1. `setEPSGRegistry` : Using `proj4jsLIB.defs` function set definition of previously loaded EPSG registry iterating with `forEach` each entries and adding 'EPSG:' to the system name.
+2. `convertLatLong` : Perform a conversion of latitude / longitude couple, other this as parameter are passed also source and destination system. Conversion is performed using `forward()` function.

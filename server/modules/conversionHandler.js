@@ -32,23 +32,5 @@ module.exports = {
             Latitude
          ] 
       ); 
-   },
-   _convertArrayOfCoordinates: function(source,destination, arrayOfCoordinates) {
-      //checking array
-     /*  if(!(arrayOfCoordinates && arrayOfCoordinates instanceof Array && arrayOfCoordinates.length > 0)) {
-         logger.LOG_FATAL('Failed loading Users module');
-         //process.exit(1); 
-         //force the process to exit killing also async pending tasks (including I/O)
-     } */
-     // this is a bad request, its better to do this check in the caller
-     let convertedArrayOfCoordinates = [];
-     arrayOfCoordinates.forEach(x => {
-      //to handle try catch in different levels
-      convertedArrayOfCoordinates.push(_convertLatLong(x));
-     });
-     return convertedArrayOfCoordinates;
-   },
-   _convertGeoJSON: function(source, destination, geoJSON) {
-
    }
 };
