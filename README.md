@@ -14,7 +14,7 @@ The project is focused on building from scratch a web application, using the new
 The functioning of the web application provides the possibility to convert a latitude / longitude pair, an array of pairs or a geoJSON specifying the source system and the destination system.
 <br><br>
 Different systems of conversion are loaded by an official `epsg` file where each system has its own representation recipe. <br><br>
-The conversion its handled in the end by `proj4js` lib, so the web application could be defined asa wrapper towards the library.
+The conversion its handled in the end by `proj4js` lib, so the web application could be defined as a wrapper towards the library.
 <br><br>
 Accessing the application for using a conversion its restricted to users defined in an assets file with an authentication based on bearer json web token, formely know as `JWT`. For completing a conversion request the user must have a credit. At the startup of the application each user has a default credit, on each request (also an incorrect request) the credit are decrement. An user that has finished the credit can't make request anymore, in that case the user is `unauthorized`. For adding a new credit to user is provided one method accessible only for Administrator user, the role is also defined in the assets file.
 
@@ -57,12 +57,12 @@ This pattern ensures that there is only one instance of the logger class. To ach
  3. The logger is ready 
 <br> <br>
 The logger class expose these methods:
-* LOG_TRADE(...)
-* LOG_DEBUG(...)
+* LOG_TRADE(...) -> wrap a console.log
+* LOG_DEBUG(...) -> wrap a console.log
 * LOG_INFO(...) -> wrap a console.log
 * LOG_WARNING(...) -> wrap a console.warning
 * LOG_ERROR(...) -> wrap a console.error
-* LOG_FATAL(...) -> throw an exception stopping the program
+* LOG_FATAL(...) -> throw an exception stopping the program if not catched in the caller. <br><br>
 That incapsulating the log process (act as wrapper), where the message is written using `appendFileSync` function.
 <br>
 The message appended at the end of file its format with:
@@ -70,7 +70,7 @@ The message appended at the end of file its format with:
     * Current time stamp with milliseconds
     * Message
 
-In the project the logger is injected almost in all modules and the message are formatted using the factory design pattern described below.
+In the project the logger is injected almost in all modules and the message are formatted using the factory design pattern described before.
 
 ### Users Loader
 This module takes care about loading the users from assets file. Use simply the following instrunction:
@@ -100,7 +100,7 @@ Are exported outside these functions:
 Utils module for operating with objects. Might be enriched with more auxiliary functions in the future. For now the only function exported is for extracting multiple `coordinates` key on geoJSON of type `FeatureCollection`. This is done using functional programming with redux, recursion, concatenation of arrays and ObjectEntries function to iterate over key/value pair of an object passed in input.
 
 ### Conversion Handler
-This module use directly proj4js library including it using `require("proj4")`. <br> Export outside different functions such as:
+This module use directly proj4js library including it using `require("proj4")`. <br> Export outside:
 1. `setEPSGRegistry` : Using `proj4jsLIB.defs` function set definition of previously loaded EPSG registry iterating with `forEach` each entries and adding 'EPSG:' to the system name.
 2. `convertLatLong` : Perform a conversion of latitude / longitude couple, other this as parameter are passed also source and destination system. Conversion is performed using `forward()` function.
 
@@ -253,3 +253,33 @@ At the end of definition of methods node server startup using the following synt
             `Node ${process.version} Running on http://${nodeIP}:${nodePort} on ${os.type()}: ${os.version()}`);
     });
 ````
+
+### Setting up Docker
+For redis:
+```` javascript
+docker pull redis
+docker run -d -p 6379:6379 --name redis-windows redis
+```` 
+For server, inside node-server dir run : 	
+```` javascript
+docker build --pull --rm -f "Dockerfile" -t server:latest "."
+```` 
+For client inside angular-client dir run:	
+```` javascript
+docker build --pull --rm -f "Dockerfile" -t client:latest "."
+```` 
+
+### Handling redis with cli
+For debugging its helpful using redis command cli, in particoular:
+1. `flushall`  clear all stored key/values
+2. `get "key"` returns its value
+3. `set "key"` sets its value
+
+### Making request without Angular Client
+It's possible to deal with node back-end side without using Angular client. To achieve that its possible to use this common method:
+1. `curl` with the following syntax:
+```` javascript
+ curl -X GET -H "Authorization: Bearer xxxx"  localhost:3000/getUsers
+ ```` 
+2. Using Postman
+3. Using Newman (command-line of Postman)
