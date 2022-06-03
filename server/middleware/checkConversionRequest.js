@@ -27,6 +27,10 @@ const checkConversionRequest = async function(req, res, next){
     // this to prevent Dos attacks consuming power on fake validation
   
     try {
+      if(!req.email) {
+        throw "Email missing on request";
+      }
+      
       const Email = req.email;
       //checking account balance
       await redisHandler._PerformCall(Email);

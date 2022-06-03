@@ -85,6 +85,7 @@ After that users loaded are exported using `module.exports`.
 This module handle EPSG, the assets file about system definition. Use the external package `n-readlines` where each line is readed and elaborated, discarding comments line that starts with `#`.
 To elaborate a line (converted in ascii), its used a clever approach, a double split, a map and a trim. This will give a result of key/value as system/definition.
 
+The process of loading all file is timed using `performance.now()`. Loading a file with about 5500 record with I7 7700HQ and m2SSD took about 85~100 milliseconds.
 ### Redis Handler
 This module allows to manage the connection between the application and redis and to manage set/get request. All communication is made using `io-redis` package. <br>
 On connection error will be displayed the `ECONNREFUSED` error and after 20 attempt of reconnection (Reconnection is handled internally by io-redis) through a LOG_FATAL the process will stop (since redis is required). <br>
@@ -102,3 +103,71 @@ Utils module for operating with objects. Might be enriched with more auxiliary f
 This module use directly proj4js library including it using `require("proj4")`. <br> Export outside different functions such as:
 1. `setEPSGRegistry` : Using `proj4jsLIB.defs` function set definition of previously loaded EPSG registry iterating with `forEach` each entries and adding 'EPSG:' to the system name.
 2. `convertLatLong` : Perform a conversion of latitude / longitude couple, other this as parameter are passed also source and destination system. Conversion is performed using `forward()` function.
+
+## Middleware
+The application made extensive use of middleware. Several executed at each rest call and few custom middleware for single or couple of methods.
+### Log Route Middleware
+First middleware that log the request endpoint, client IP and header.
+
+### Error Handler Middleware
+Middleware used when an error occurred. The error is logged and with a `res.status` function its also send to the caller of request. Error is formatted using the Factory Design Pattern previously described with also the Http status code:
+```` javascript
+const errorHandler = function(err, req, res, next) {   
+    logger.LOG_ERROR(err.message);
+    res.status(err.StatusCode).json({"error": err.message});
+}
+````
+This middleware its also called inside an actual request, using the following syntax:
+```` javascript
+catch(ex) {
+      let err = new Error(
+        errorFactory.getError(enumHTTPStatusCodes.UnprocessableEntity).getMsg() + `: ${ex}`
+      );
+      err.StatusCode = enumHTTPStatusCodes.UnprocessableEntity;
+      require("./middleware/errorHandler")(err, req, res, null);
+      return;
+  }
+````
+### Authentication Middleware
+#### Check Header Middleware
+Verify if `req.headers.authorization` has value, if not the execution of call does not continue and ends up on error handler middleware mentioned before using `next(err)` function.
+#### Check Token Middleware
+Retriving and checking the JWT token, `splitting` the req.headers.authorization and taking the last part, if there are no exception with `next()` will be executed the next auth middleware.
+#### Verify and Authenticate Middleware
+Using `jsonwebtoken` package is possibly to decode the JWT using the `SECRET_KEY` stored on the .env file. <br>
+If the token is validated but the email on it is not on users loaded at startup the middleware ends up in the error handler.
+
+### Custom Middleware
+#### Check Admin Role
+Verify back-end side if the email given as input is present on the system and it's role is `Administrator`. <br> This middleware like the other custom uses the same approach: If the validation is successfully with `next()` the execution continue (so the get/post/put method will be executed), If the validation fail will be used the error handler with the following syntax as usual: 
+```` javascript
+ let err = new Error(
+      errorFactory.getError(
+        enumHTTPStatusCodes.Unauthorized).getMsg() + 
+        `: User '${req.email}' role is not Administrator.`);
+    err.StatusCode = enumHTTPStatusCodes.Unauthorized;
+    require("./errorHandler")(err, req, res, null);
+`````
+
+#### Check Credit Request
+This middleware validate the `AddCredit` (
+which will be introduced later) request. <br>
+In particoular:
+1. Will be checked the body if is not null/undefined.
+2. Will be checked the email if exists on users loaded.
+3. Will be check the credit value if is an integer (can not be a float value), using `Number.isInteger` function and if it is a number major than zero.
+
+#### Check Conversion Request
+Custom middleware used on the three type of conversion request (couple, array, geoJSON). <br>
+Here are validated:
+1. The body request
+2. The email presence on the body request
+3. Using the function introduced before `PerformCall` with await to block execution of program (want to wait redis to response about the email provided as input), check If the email can perform the request and if yes decrementing its credits.
+4. Checking if Source is not `null - undefined - 0 - '' - false` simply with:
+    ```` javascript
+    if(!params.Source) 
+    ```` 
+5. Checking if provided Source is present on the EPSG file loaded at startup using `indexOf` function.
+6. Same checks for Destination (point 4 and 5)
+
+If one validation will not pass the erro handler is called, otherwise the execution continue with `next()`

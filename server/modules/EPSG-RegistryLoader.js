@@ -31,7 +31,7 @@ if(!fs.existsSync(epsgFilePath)) {
     let line;
     let lineNumber = 1;
 
-    const startTime = performance.now()
+    const startTime = performance.now();
 
     //last line  (.next()) will return false since is in while condition will exit
     while (line = broadbandLines.next()) {
