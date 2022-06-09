@@ -22,7 +22,7 @@ const verifyAndAuthenticate = function(req, res, next) {
         err.StatusCode = enumHTTPStatusCodes.Unauthorized;
         next(err);
       }
-      //accessing global variable through req.app.locals
+      //accessing req.app.locals
       if((req.app.locals.users.find(x => x['Email'] === req.email) === undefined)) {
         let err = new Error(
           errorFactory.getError(

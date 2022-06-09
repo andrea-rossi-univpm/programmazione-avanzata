@@ -68,7 +68,7 @@ const checkConversionRequest = async function(req, res, next){
     if(!params.Destination) {
       let err = new Error(
         errorFactory.getError(enumHTTPStatusCodes.BadRequest).getMsg() + ": Undefined system Destination");
-      err.StatusCode = enumHTTPStatusCodes.Unauthorized;
+      err.StatusCode = enumHTTPStatusCodes.BadRequest;
       require("./errorHandler")(err, req, res, null);
       return;
     }   
