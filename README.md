@@ -47,9 +47,9 @@ An helper module that provide functions about getting current time: <br>
 ### Error Factory
 This module expose a class based on `Factory design pattern` that allows to handle different http status code to be created in a flexible and reusable way, using a generic interface. (Since in javascript interfaces does not exists, this is implemented using a class with extends keywords)
 
-### Logger Singletone
+### Logger Singleton
 
-As the name suggest, this module implement a logger class using a `Singletone pattern`. <br>
+As the name suggest, this module implement a logger class using a `Singleton pattern`. <br>
 This pattern ensures that there is only one instance of the logger class. To achieve this, the class has a static function called `getInstance` that create a new instance if there its the first time that its called, otherwise will return the previous created instance.
 <br>When its created the first and only instance, obviously will be called the constructor of the class and the logger will be initialized as below:<br>
  1. Name of the log are setted concatenating a prefix string (Node_) and current time in linux epoch.
